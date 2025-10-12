@@ -113,15 +113,18 @@ public static class ChunkMeshGenerator{
                         subFaces.Add(new List<int>());
                     }
 
-                    if(block.IsCube()){
+                    if(block.IsSolid()){
                         int submeshId = submeshBlockTypes.IndexOf((blockType, blockLevel));
                         // check 6 faces of the block
-                        if(IsEmpty(chunk.blocks, x + 1, y, z)) AddFace(vertices, faces, uvs, subFaces, submeshId, block, Direction.Right);
-                        if(IsEmpty(chunk.blocks, x - 1, y, z)) AddFace(vertices, faces, uvs, subFaces, submeshId, block, Direction.Left);
-                        if(IsEmpty(chunk.blocks, x, y + 1, z)) AddFace(vertices, faces, uvs, subFaces, submeshId, block, Direction.Up);
-                        if(IsEmpty(chunk.blocks, x, y - 1, z)) AddFace(vertices, faces, uvs, subFaces, submeshId, block, Direction.Down);
-                        if(IsEmpty(chunk.blocks, x, y, z + 1)) AddFace(vertices, faces, uvs, subFaces, submeshId, block, Direction.Forward);
-                        if(IsEmpty(chunk.blocks, x, y, z - 1)) AddFace(vertices, faces, uvs, subFaces, submeshId, block, Direction.Back);
+                        if(!IsSolid(chunk.blocks, x + 1, y, z)) AddFace(vertices, faces, uvs, subFaces, submeshId, block, Direction.Right);
+                        if(!IsSolid(chunk.blocks, x - 1, y, z)) AddFace(vertices, faces, uvs, subFaces, submeshId, block, Direction.Left);
+                        if(!IsSolid(chunk.blocks, x, y + 1, z)) AddFace(vertices, faces, uvs, subFaces, submeshId, block, Direction.Up);
+                        if(!IsSolid(chunk.blocks, x, y - 1, z)) AddFace(vertices, faces, uvs, subFaces, submeshId, block, Direction.Down);
+                        if(!IsSolid(chunk.blocks, x, y, z + 1)) AddFace(vertices, faces, uvs, subFaces, submeshId, block, Direction.Forward);
+                        if(!IsSolid(chunk.blocks, x, y, z - 1)) AddFace(vertices, faces, uvs, subFaces, submeshId, block, Direction.Back);
+                    }else if(block.IsLiquid()){
+                        int submeshId = submeshBlockTypes.IndexOf((blockType, blockLevel));
+                        AddFace(vertices, faces, uvs, subFaces, submeshId, block, Direction.Up);
                     }
 
 
@@ -163,13 +166,13 @@ public static class ChunkMeshGenerator{
         }
     }
 
-    static bool IsEmpty(Block[,,] blocks, int x, int y, int z){
+    static bool IsSolid(Block[,,] blocks, int x, int y, int z){
         if(x < 0 || Chunk.sizeH <= x || y < 0 || Chunk.sizeV <= y || z < 0 || Chunk.sizeH <= z){
-            return true;
+            return false;
         }else if(blocks[x, y, z] == null){
-            return true;
+            return false;
         }else{
-            return !(blocks[x, y, z].IsCube());
+            return blocks[x, y, z].IsSolid();
         }
     }
 

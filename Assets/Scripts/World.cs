@@ -10,7 +10,8 @@ public partial class World : MonoBehaviour  // Other functions are written in "W
 {
     public Dictionary<Vector2Int, Chunk> chunks = new Dictionary<Vector2Int, Chunk>();
 
-    private const int drawRange = 2;
+    private const int initialDrawRange = 2; // at the beginning of the game
+    private const int drawRange = 5;
     private const int drawWidth = 2 * drawRange + 1;
     public Vector2Int[] drawingChunkIds;
 
@@ -33,8 +34,8 @@ public partial class World : MonoBehaviour  // Other functions are written in "W
 
         drawingChunkIds = new Vector2Int[drawWidth * drawWidth];
         int k = 0;
-        for(int i = -drawRange; i <= drawRange; i++){
-            for(int j = -drawRange; j <= drawRange; j++){
+        for(int i = -initialDrawRange; i <= initialDrawRange; i++){
+            for(int j = -initialDrawRange; j <= initialDrawRange; j++){
 
                 drawingChunkIds[k++] = new Vector2Int(i, j);
 
@@ -59,21 +60,44 @@ public partial class World : MonoBehaviour  // Other functions are written in "W
     void Update()
     {
         var userChunkId = GetChunkId(user.transform.position);
+        int i = 0;
+        for(int distance = 0; distance < drawRange * 2; distance++){
+            for(int x = 0; x <= drawRange; x++){
+                int y = distance - x;
+                if(y < 0){
+                    break;
+                }else if(y == 0){
+                    drawingChunkIds[i++] = new Vector2Int(userChunkId.x + x,
+                                                          userChunkId.y);
+                    if(x != 0){
+                        drawingChunkIds[i++] = new Vector2Int(userChunkId.x - x,
+                                                                userChunkId.y);
+                    }
+                }else if(y <= drawRange){
+                    drawingChunkIds[i++] = new Vector2Int(userChunkId.x + x,
+                                                          userChunkId.y + y);
+                    drawingChunkIds[i++] = new Vector2Int(userChunkId.x + x,
+                                                          userChunkId.y - y);
+                    if(x != 0){
+                        drawingChunkIds[i++] = new Vector2Int(userChunkId.x - x,
+                                                            userChunkId.y + y);
+                        drawingChunkIds[i++] = new Vector2Int(userChunkId.x - x,
+                                                            userChunkId.y - y);
+                    }
+                }else{
+                    continue;
+                }
+            }
+        }
+        /*
         for(int i = 0; i < drawWidth; i++){
             for(int j = 0; j < drawWidth; j++){
                 drawingChunkIds[i * drawWidth + j] = new Vector2Int(userChunkId.x - drawRange + i,
                                                                     userChunkId.y - drawRange + j);
-                // Debug.Log(drawingChunkIds[i * drawWidth + j]);
             }
         }
+        */
 
-
-        for(int i = 0; i < drawingChunkIds.Length; i++){
-            Vector2Int chunkId = drawingChunkIds[i];
-            // Debug.Log($"chunkid {chunkId} i {i}");
-            if(!chunks.ContainsKey(chunkId)) continue;
-            chunks[chunkId].Update();
-        }
         Draw();
 
     }
@@ -211,6 +235,7 @@ public partial class World : MonoBehaviour  // Other functions are written in "W
 
                 hit.space = chunks[spaceChunkId].blocks[spaceLocalId.x, spaceLocalId.y, spaceLocalId.z];
                 return hit;
+
             }else if(maxDistance < 0){
                 return null;
             }
@@ -224,11 +249,13 @@ public partial class World : MonoBehaviour  // Other functions are written in "W
         block.blockType = blockType;
         block.chunkId = chunkId;
         block.localId = localId;
+        chunks[chunkId].SetBlock(block, localId);
 
         if(IsCube(blockType)){
             block.SetBlockLevel(blockLevel);
             ChunkMeshGenerator.UpdateMeshData(chunks[chunkId]);
             ChunkMeshGenerator.UpdateMesh(chunks[chunkId]);
+            Debug.Log("update mesh");
         }
         else if(IsObject(blockType)){
             chunks[chunkId].objects[localId] = blockType;
@@ -237,9 +264,9 @@ public partial class World : MonoBehaviour  // Other functions are written in "W
                 AddFenseBlock((FenseBlock)block);
             }
         }
-        Debug.Log($"add block {block.GetType().Name} localId {localId}");
-        chunks[chunkId].SetBlock(block, localId);
+
         chunks[chunkId].modified = true;
+
     }
 
     public void DeleteBlock(Block block){
@@ -285,15 +312,18 @@ public partial class World : MonoBehaviour  // Other functions are written in "W
             }
             Block nbr = GetBlock(chunkId, nbrId);
             if(!nbr.IsEmpty()){
-                block.fenseShape[(byte)direction] = true;
+                // block.fenseShape[(byte)direction] = true;
+                block.SetFenseShape(true, (byte)direction);
                 if(nbr.IsFense()){
-                    int oppositeDirection = ((int)direction + 2) % 4;
+                    int oppositeDirection = ((byte)direction ^ 0b_00000010);
                     // nbr.fenseShape[oppositeDirection] = true;
-                    nbr.SetFenseShape((byte)(nbr.GetFenseNumber() | 1 << oppositeDirection));
+                    nbr.SetFenseShape(true, (byte)oppositeDirection);
+                    // nbr.SetFenseShape((byte)(nbr.GetFenseNumber() | 1 << oppositeDirection));
 
                 }
             }else{
-                block.fenseShape[(byte)direction] = false;
+                // block.fenseShape[(byte)direction] = false;
+                block.SetFenseShape(false, (byte)direction);
             }
         }
     }
@@ -323,8 +353,10 @@ public partial class World : MonoBehaviour  // Other functions are written in "W
             }
             Block nbr = GetBlock(chunkId, nbrId);
             if(nbr.IsFense()){
-                int oppositeDirection = ((int)direction + 2) % 4;
-                nbr.SetFenseShape((byte)(nbr.GetFenseNumber() & 0b_11111110 << oppositeDirection));
+                // int oppositeDirection = ((int)direction + 2) % 4;
+                // nbr.SetFenseShape((byte)(nbr.GetFenseNumber() & 0b_11111110 << oppositeDirection));
+                int oppositeDirection = ((byte)direction ^ 0b_00000010);
+                nbr.SetFenseShape(false, (byte)oppositeDirection);
             }
         }
     }

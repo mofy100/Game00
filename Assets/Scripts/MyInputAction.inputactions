@@ -107,6 +107,15 @@
                     "processors": "",
                     "interactions": "",
                     "initialStateCheck": false
+                },
+                {
+                    "name": "SelectBlock",
+                    "type": "Value",
+                    "id": "a2e1ddac-e402-4eb0-ba4f-3721e10655af",
+                    "expectedControlType": "Axis",
+                    "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": true
                 }
             ],
             "bindings": [
@@ -173,6 +182,17 @@
                     "processors": "",
                     "groups": "",
                     "action": "MoveDown",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "2b273500-9102-4108-9b04-a0cf610996f5",
+                    "path": "<Gamepad>/rightShoulder",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "SelectBlock",
                     "isComposite": false,
                     "isPartOfComposite": false
                 }

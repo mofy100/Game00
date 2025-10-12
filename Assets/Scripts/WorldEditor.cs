@@ -1,11 +1,13 @@
+using System;
 using UnityEngine;
 using UnityEngine.InputSystem;
+using TMPro;
 
 public class WorldEditor: MonoBehaviour
 {
     // private MyInputAction controll;
     private Vector2 moveDirection;
-    private InputAction moveAction, moveupAction, movedownAction, rotateAction, addAction, delAction;
+    private InputAction moveAction, moveupAction, movedownAction, rotateAction, addAction, delAction, selectBlockAction;
     private World world;
 
     private bool adding;
@@ -16,6 +18,7 @@ public class WorldEditor: MonoBehaviour
 
     public BlockType holdingBlockType;
     public byte holdingBlockLevel;
+    public TextMeshProUGUI holdingBlockText;
 
     [SerializeField] private InputActionAsset inputActions;
     [SerializeField] float moveSpeed;
@@ -26,6 +29,7 @@ public class WorldEditor: MonoBehaviour
     public Camera myCamera;
 
     void Awake(){
+        // Input Setting
         var editorActions = inputActions.FindActionMap("Editor");
         moveAction = editorActions.FindAction("Move");
         moveupAction = editorActions.FindAction("MoveUp");
@@ -33,11 +37,16 @@ public class WorldEditor: MonoBehaviour
         rotateAction = editorActions.FindAction("Rotate");
         addAction = editorActions.FindAction("Add");
         delAction = editorActions.FindAction("Del");
+        selectBlockAction = editorActions.FindAction("SelectBlock");
+
+        // UI Setting
+        holdingBlockText.text = holdingBlockType.ToString();
 
         world = GameObject.Find("World").GetComponent<World>();
         adding = false;
         deleting = false;
         nextActionTime = Mathf.Infinity;
+
     }
 
     void Start(){
@@ -86,6 +95,8 @@ public class WorldEditor: MonoBehaviour
         delAction.Enable();
         delAction.performed += Del;
         delAction.canceled += StopDel;
+        selectBlockAction.Enable();
+        selectBlockAction.performed += SelectBlock;
     }
     void OnDisable(){
         moveAction.Disable();
@@ -98,6 +109,8 @@ public class WorldEditor: MonoBehaviour
         delAction.performed -= Del;
         delAction.canceled -= StopDel;
         delAction.Disable();
+        selectBlockAction.Disable();
+        selectBlockAction.performed -= SelectBlock;
     }
 
     void Move(Vector2 direction){
@@ -154,6 +167,14 @@ public class WorldEditor: MonoBehaviour
         if(hit != null){
             world.DeleteBlock(hit.block);
         }
+    }
+
+    void SelectBlock(InputAction.CallbackContext context){
+        holdingBlockType = (BlockType)(((byte)holdingBlockType + 1) % Enum.GetNames(typeof(BlockType)).Length);
+        if(holdingBlockType == BlockType.Empty){
+            holdingBlockType = (BlockType)(((byte)holdingBlockType + 1) % Enum.GetNames(typeof(BlockType)).Length);
+        }
+        holdingBlockText.text = holdingBlockType.ToString();
     }
 
     Direction2D GetDirection2D(){

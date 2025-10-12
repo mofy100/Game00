@@ -43,8 +43,6 @@ public partial class World // Other functions are written in "WorldUtils.cs"
                     var blockData = BlockDataManager.GetBlockData(blockType);
                     var blockRotation = Quaternion.Euler(0.0f, block.GetAngle(), 0.0f);
 
-                    Debug.Log($"draw type {block.GetType().Name} localId {localId}");
-
                     Graphics.DrawMesh(block.GetMesh(), Matrix4x4.TRS(GetGlobalPos(chunkId, localId), blockRotation, Vector3.one), blockData.material, 0);
                 }
             }else{

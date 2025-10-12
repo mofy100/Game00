@@ -17,6 +17,8 @@ public class WorldLoader : MonoBehaviour{
                     writer.Write((byte)block.blockType);
                     if(block.IsFense()){
                         writer.Write((byte)block.GetFenseNumber());
+                    }else if(block.IsSoil()){
+                        writer.Write((byte)block.GetBlockLevelRaw());
                     }
                 }
             }
@@ -38,18 +40,19 @@ public class WorldLoader : MonoBehaviour{
             for(int y = 0; y < Chunk.sizeV; y++){
                 for(int z = 0; z < Chunk.sizeH; z++){
                     BlockType blockType = (BlockType)reader.ReadByte();
-                    Block b = new Block{
-                        blockType = blockType,
-                        chunkId = chunkId,
-                        localId = new Vector3Int(x, y, z)
-                    };
+                    Block b = BlockUtils.CreateBlock(blockType);
+                    b.chunkId = chunkId;
+                    b.localId = new Vector3Int(x, y, z);
                     chunk.blocks[x, y, z] = b;
                     if(b.IsObject()){
                         chunk.objects[new Vector3Int(x, y, z)] = blockType;
-                    }
-                    if(b.IsFense()){
-                        byte fenseNumber = reader.ReadByte();
-                        b.SetFenseShape(fenseNumber);
+                        if(b.IsFense()){
+                            byte fenseNumber = reader.ReadByte();
+                            b.SetFenseShape(fenseNumber);
+                        }
+                    }else if(b.IsSoil()){
+                        byte blockLevel = reader.ReadByte();
+                        b.SetBlockLevelRaw(blockLevel);
                     }
                 }
             }

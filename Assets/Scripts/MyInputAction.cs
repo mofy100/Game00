@@ -193,6 +193,15 @@ public partial class @MyInputAction: IInputActionCollection2, IDisposable
                     ""processors"": """",
                     ""interactions"": """",
                     ""initialStateCheck"": false
+                },
+                {
+                    ""name"": ""SelectBlock"",
+                    ""type"": ""Value"",
+                    ""id"": ""a2e1ddac-e402-4eb0-ba4f-3721e10655af"",
+                    ""expectedControlType"": ""Axis"",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": true
                 }
             ],
             ""bindings"": [
@@ -261,6 +270,17 @@ public partial class @MyInputAction: IInputActionCollection2, IDisposable
                     ""action"": ""MoveDown"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""2b273500-9102-4108-9b04-a0cf610996f5"",
+                    ""path"": ""<Gamepad>/rightShoulder"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""SelectBlock"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
                 }
             ]
         },
@@ -307,6 +327,7 @@ public partial class @MyInputAction: IInputActionCollection2, IDisposable
         m_Editor_Del = m_Editor.FindAction("Del", throwIfNotFound: true);
         m_Editor_MoveUp = m_Editor.FindAction("MoveUp", throwIfNotFound: true);
         m_Editor_MoveDown = m_Editor.FindAction("MoveDown", throwIfNotFound: true);
+        m_Editor_SelectBlock = m_Editor.FindAction("SelectBlock", throwIfNotFound: true);
         // UI
         m_UI = asset.FindActionMap("UI", throwIfNotFound: true);
         m_UI_Newaction = m_UI.FindAction("New action", throwIfNotFound: true);
@@ -505,6 +526,7 @@ public partial class @MyInputAction: IInputActionCollection2, IDisposable
     private readonly InputAction m_Editor_Del;
     private readonly InputAction m_Editor_MoveUp;
     private readonly InputAction m_Editor_MoveDown;
+    private readonly InputAction m_Editor_SelectBlock;
     /// <summary>
     /// Provides access to input actions defined in input action map "Editor".
     /// </summary>
@@ -540,6 +562,10 @@ public partial class @MyInputAction: IInputActionCollection2, IDisposable
         /// Provides access to the underlying input action "Editor/MoveDown".
         /// </summary>
         public InputAction @MoveDown => m_Wrapper.m_Editor_MoveDown;
+        /// <summary>
+        /// Provides access to the underlying input action "Editor/SelectBlock".
+        /// </summary>
+        public InputAction @SelectBlock => m_Wrapper.m_Editor_SelectBlock;
         /// <summary>
         /// Provides access to the underlying input action map instance.
         /// </summary>
@@ -584,6 +610,9 @@ public partial class @MyInputAction: IInputActionCollection2, IDisposable
             @MoveDown.started += instance.OnMoveDown;
             @MoveDown.performed += instance.OnMoveDown;
             @MoveDown.canceled += instance.OnMoveDown;
+            @SelectBlock.started += instance.OnSelectBlock;
+            @SelectBlock.performed += instance.OnSelectBlock;
+            @SelectBlock.canceled += instance.OnSelectBlock;
         }
 
         /// <summary>
@@ -613,6 +642,9 @@ public partial class @MyInputAction: IInputActionCollection2, IDisposable
             @MoveDown.started -= instance.OnMoveDown;
             @MoveDown.performed -= instance.OnMoveDown;
             @MoveDown.canceled -= instance.OnMoveDown;
+            @SelectBlock.started -= instance.OnSelectBlock;
+            @SelectBlock.performed -= instance.OnSelectBlock;
+            @SelectBlock.canceled -= instance.OnSelectBlock;
         }
 
         /// <summary>
@@ -813,6 +845,13 @@ public partial class @MyInputAction: IInputActionCollection2, IDisposable
         /// <seealso cref="UnityEngine.InputSystem.InputAction.performed" />
         /// <seealso cref="UnityEngine.InputSystem.InputAction.canceled" />
         void OnMoveDown(InputAction.CallbackContext context);
+        /// <summary>
+        /// Method invoked when associated input action "SelectBlock" is either <see cref="UnityEngine.InputSystem.InputAction.started" />, <see cref="UnityEngine.InputSystem.InputAction.performed" /> or <see cref="UnityEngine.InputSystem.InputAction.canceled" />.
+        /// </summary>
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.started" />
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.performed" />
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.canceled" />
+        void OnSelectBlock(InputAction.CallbackContext context);
     }
     /// <summary>
     /// Interface to implement callback methods for all input action callbacks associated with input actions defined by "UI" which allows adding and removing callbacks.

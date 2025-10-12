@@ -13,9 +13,12 @@ public class Block
     public Vector3Int localId;
 
     public virtual byte GetBlockLevel(){return 0;}
+    public virtual byte GetBlockLevelRaw(){return 0;}
     public virtual void SetBlockLevel(byte level){}
+    public virtual void SetBlockLevelRaw(byte level){}
     public virtual Mesh GetMesh(){return null;}
     public virtual byte GetFenseNumber(){return 0;}
+    public virtual void SetFenseShape(bool flag, byte index){}
     public virtual void SetFenseShape(byte number){}
     public virtual float GetAngle(){return 0;}
     public virtual void SetAngle(Direction2D angle){}
@@ -29,9 +32,12 @@ public class Block
     }
     public bool IsEmpty(){ return BlockUtils.IsEmpty(blockType); }
     public bool IsCube(){ return BlockUtils.IsCube(blockType); }
+    public bool IsSoil(){ return BlockUtils.IsSoil(blockType); }
     public bool IsWall(){ return BlockUtils.IsWall(blockType); }
     public bool IsObject(){ return BlockUtils.IsObject(blockType); }
     public bool IsFense(){ return BlockUtils.IsFense(blockType); }
+    public bool IsSolid(){ return BlockUtils.IsSolid(blockType); }
+    public bool IsLiquid(){ return BlockUtils.IsLiquid(blockType); }
 }
 
 public class SoilBlock : Block{
@@ -39,8 +45,14 @@ public class SoilBlock : Block{
     public override byte GetBlockLevel(){ // => 0 ~ 15
         return (byte)(soilLevel >> 4);
     }
+    public override byte GetBlockLevelRaw(){ // 0 ~ 255
+        return (byte)(soilLevel);
+    }
     public override void SetBlockLevel(byte level){
         soilLevel = (byte)(level << 4);
+    }
+    public override void SetBlockLevelRaw(byte level){
+        soilLevel = level;
     }
     public override void Update(){
         soilLevel += 16;
@@ -102,9 +114,12 @@ public class FenseBlock : ObjectBlock{
                     | ((fenseShape[3] ? 1 : 0) << 3);
         return (byte)number;
     }
+    public override void SetFenseShape(bool flag, byte index){
+        fenseShape[index] = flag;
+    }
     public override void SetFenseShape(byte number){
         for(int i = 0; i < 4; i++){
-            fenseShape[i] = (number & (1 << i)) != 0;
+            fenseShape[i] = ((number & (1 << i)) != 0);
         }
     }
 }

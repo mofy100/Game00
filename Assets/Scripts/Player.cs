@@ -18,6 +18,8 @@ public class Player : MonoBehaviour
     [SerializeField] float rotateSpeed;
     [SerializeField] float cameraHeight;
     [SerializeField] float minRotationX, maxRotationX;
+    [SerializeField] GameObject character;
+    private Animator characterAnimator;
 
     // Capsule Collider
     private const float colliderHeight = 2.0f;
@@ -31,6 +33,8 @@ public class Player : MonoBehaviour
         rotateAction = editorActions.FindAction("Rotate");
 
         world = GameObject.Find("World").GetComponent<World>();
+
+        characterAnimator = character.GetComponent<Animator>();
     }
 
     void Start(){
@@ -42,6 +46,9 @@ public class Player : MonoBehaviour
         Vector2 moveDirection = moveAction.ReadValue<Vector2>();
         if(moveDirection != Vector2.zero){
             Move(moveDirection);
+            characterAnimator.SetBool("moving", true);
+        }else{
+            characterAnimator.SetBool("moving", false);
         }
         Vector2 rotateDirection = rotateAction.ReadValue<Vector2>();
         if(rotateDirection != Vector2.zero){
@@ -69,7 +76,6 @@ public class Player : MonoBehaviour
         // Vector2 delta = GetMoveDistance(currentPosition, direction * moveSpeed * Time.deltaTime);
         Vector2 delta = direction * moveSpeed * Time.deltaTime;
 
-
         currentPosition.x += delta.x;
         currentPosition.z += delta.y;
 
@@ -80,6 +86,10 @@ public class Player : MonoBehaviour
         currentPosition.y = world.GetGround(currentPosition) * Block.sizeV;
 
         transform.position = currentPosition;
+
+        // rotate character mesh
+        Vector3 dir = new Vector3(direction.x, 0.0f, direction.y);
+        character.transform.rotation = Quaternion.LookRotation(dir);
     }
 
     void Rotate(Vector2 direction){
@@ -88,6 +98,7 @@ public class Player : MonoBehaviour
 
         myCamera.transform.RotateAround(this.transform.position, myCamera.transform.right, angleX);
         transform.Rotate(0, angleY, 0, Space.World);
+        character.transform.Rotate(0, -angleY, 0, Space.World);
     }
 
 

@@ -12,7 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: eef24e29f2a17094da46f7f351437190, type: 3}
   m_Name: Fense
   m_EditorClassIdentifier: Assembly-CSharp::BlockData
-  blockType: 1
+  blockType: 3
   mesh: {fileID: 0}
   meshes:
   - {fileID: -5495902117074765545, guid: dfe5e04d685cc874a91f3ae8b2597bd0, type: 3}
