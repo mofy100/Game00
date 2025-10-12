@@ -1,0 +1,25 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: eef24e29f2a17094da46f7f351437190, type: 3}
+  m_Name: Fense
+  m_EditorClassIdentifier: Assembly-CSharp::BlockData
+  blockType: 1
+  mesh: {fileID: 0}
+  meshes:
+  - {fileID: -5495902117074765545, guid: dfe5e04d685cc874a91f3ae8b2597bd0, type: 3}
+  - {fileID: 2212009239438826721, guid: f798af2c992ea0a489df4347b12945f7, type: 3}
+  - {fileID: -8678823145569952518, guid: e7320384e4cf242479c2bd0c602a196e, type: 3}
+  - {fileID: -8678823145569952518, guid: 5f1bd47b847ae21498ab44aa34b656e5, type: 3}
+  - {fileID: -5495902117074765545, guid: 4631ee7a331d27f419ef2ddc7a9e207b, type: 3}
+  - {fileID: 8552134717624371188, guid: 6f1948ed62ce2b14d80e1fc018f81a26, type: 3}
+  material: {fileID: 2100000, guid: f1f2cbbfc4a0518468c7d6206a07469d, type: 2}
+  materials: []

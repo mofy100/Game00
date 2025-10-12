@@ -1,0 +1,132 @@
+using UnityEngine;
+using UnityEngine.InputSystem;
+
+public class Player : MonoBehaviour
+{
+    // private MyInputAction controll;
+    private Vector2 moveDirection;
+    private InputAction moveAction, rotateAction;
+    private World world;
+
+    private Vector2Int chunkId;
+    private Vector3Int localId;
+    private Vector3 localPos;
+    private Block currentBlock;
+
+    [SerializeField] private InputActionAsset inputActions;
+    [SerializeField] float moveSpeed;
+    [SerializeField] float rotateSpeed;
+    [SerializeField] float cameraHeight;
+    [SerializeField] float minRotationX, maxRotationX;
+
+    // Capsule Collider
+    private const float colliderHeight = 2.0f;
+    private const float colliderRadius = 0.5f;
+
+    public Camera myCamera;
+
+    void Awake(){
+        var editorActions = inputActions.FindActionMap("Player");
+        moveAction = editorActions.FindAction("Move");
+        rotateAction = editorActions.FindAction("Rotate");
+
+        world = GameObject.Find("World").GetComponent<World>();
+    }
+
+    void Start(){
+        Move(Vector2.zero);
+    }
+
+    void Update()
+    {
+        Vector2 moveDirection = moveAction.ReadValue<Vector2>();
+        if(moveDirection != Vector2.zero){
+            Move(moveDirection);
+        }
+        Vector2 rotateDirection = rotateAction.ReadValue<Vector2>();
+        if(rotateDirection != Vector2.zero){
+            Rotate(rotateDirection);
+        }
+
+    }
+
+    void OnEnable(){
+        moveAction.Enable();
+        rotateAction.Enable();
+    }
+    void OnDisable(){
+        moveAction.Disable();
+        rotateAction.Disable();
+    }
+
+    void Move(Vector2 direction){
+        float rad = -1.0f * transform.rotation.eulerAngles.y * Mathf.Deg2Rad;
+        float cos = Mathf.Cos(rad);
+        float sin = Mathf.Sin(rad);
+        Vector3 currentPosition = transform.position;
+        direction = new Vector2(direction.x * cos - direction.y * sin,
+                                direction.x * sin + direction.y * cos);
+        // Vector2 delta = GetMoveDistance(currentPosition, direction * moveSpeed * Time.deltaTime);
+        Vector2 delta = direction * moveSpeed * Time.deltaTime;
+
+
+        currentPosition.x += delta.x;
+        currentPosition.z += delta.y;
+
+        Vector2 back = SolveCollision(currentPosition, delta);
+        currentPosition.x -= back.x;
+        currentPosition.z -= back.y;
+
+        currentPosition.y = world.GetGround(currentPosition) * Block.sizeV;
+
+        transform.position = currentPosition;
+    }
+
+    void Rotate(Vector2 direction){
+        float angleX = direction.y * rotateSpeed * Time.deltaTime * -1.0f;
+        float angleY = direction.x * rotateSpeed * Time.deltaTime;
+
+        myCamera.transform.RotateAround(this.transform.position, myCamera.transform.right, angleX);
+        transform.Rotate(0, angleY, 0, Space.World);
+    }
+
+
+
+    Vector2 SolveCollision(Vector3 position, Vector2 delta){
+        Vector2Int chunkId = world.GetChunkId(position);
+        Vector3Int localId = world.GetLocalId(position);
+        Vector3 localPos = world.GetLocalPos(position);
+
+        int[] dxs = new int[] {-1, 0, 1};
+        int[] dzs = new int[] {-1, 0, 1};
+
+        Vector2 back = Vector2.zero;
+        for(int i = 0; i < 3; i++){
+            int dx = dxs[i];
+            for(int j = 0; j < 3; j++){
+                int dz = dzs[j];
+
+                if(world.GetBlock(chunkId, new Vector3Int(localId.x + dx, localId.y + 1, localId.z + dz)).IsWall()){
+                    back += Collision(new Vector2(localPos.x, localPos.z), new Vector2(localId.x + dx, localId.z + dz), colliderRadius);
+                }
+            }
+        }
+        return back;
+    }
+
+    Vector2 Collision(Vector2 circle, Vector2 square, float radius){
+        float closeX = Mathf.Clamp(circle.x, square.x - 0.5f, square.x + 0.5f);
+        float closeY = Mathf.Clamp(circle.y, square.y - 0.5f, square.y + 0.5f);
+        float dx = circle.x - closeX;
+        float dy = circle.y - closeY;
+        // Debug.Log($"dx {dx} dy {dy} closeX {closeX} closeY {closeY} circle {circle} square {square}");
+        if(dx * dx + dy * dy <= radius * radius - 0.01f){
+            float overlap = radius - Mathf.Sqrt(dx * dx + dy * dy);
+            if(overlap > 0.0f){
+                return new Vector2(dx, dy).normalized * -1.0f * overlap;
+            }
+        }
+        return Vector2.zero;
+    }
+}
+

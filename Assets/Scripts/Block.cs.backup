@@ -1,0 +1,110 @@
+using System;
+using UnityEngine;
+using static BlockUtils;
+
+
+public class Block
+{
+    public const float sizeH = 1.0f;
+    public const float sizeV = 0.2f;
+    // public static int blockTypeCount = Enum.GetValues(typeof(BlockType)).Length;
+
+    public BlockType blockType;
+
+    public Vector2Int chunkId;
+    public Vector3Int localId;
+    public Direction2D angle; // (0, 1, 2, 3) = (0, 90, 180, 270)
+
+    public bool[] fenseShape = new bool[4]; // default(0,0,0,0) ~ X shape(1,1,1,1)
+
+    public byte soilLevel; // 0 ~ 255 => 0 ~ 15
+
+
+
+    public void SetBlockLevel(byte level){
+        soilLevel = (byte)(level << 4);
+    }
+
+    public byte GetBlockLevel(){
+        return (byte)(soilLevel >> 4);
+    }
+
+    public bool IsEmpty(){
+        return BlockUtils.IsEmpty(blockType);
+    }
+
+    public bool IsCube(){
+        return BlockUtils.IsCube(blockType);
+    }
+
+    public bool IsWall(){
+        return BlockUtils.IsWall(blockType);
+    }
+
+    public bool IsObject(){
+        return BlockUtils.IsObject(blockType);
+    }
+
+    public bool IsFense(){
+        return BlockUtils.IsFense(blockType);
+    }
+
+    public Vector3 GetGlobalPosition(){
+        return new Vector3(chunkId.x * Chunk.sizeH, 0.0f, chunkId.y * Chunk.sizeH) + GetLocalPosition();
+    }
+
+    public Vector3 GetLocalPosition(){
+        return new Vector3(localId.x * Block.sizeH, localId.y * Block.sizeV, localId.z * Block.sizeH);
+    }
+
+    public byte GetFenseNumber(){
+        int number = (fenseShape[0] ? 1 : 0)
+                    | ((fenseShape[1] ? 1 : 0) << 1)
+                    | ((fenseShape[2] ? 1 : 0) << 2)
+                    | ((fenseShape[3] ? 1 : 0) << 3);
+        return (byte)number;
+    
+    }
+
+    public void SetFenseShape(byte number){
+        for(int i = 0; i < 4; i++){
+            fenseShape[i] = (number & (1 << i)) != 0;
+        }
+    }
+
+    public Mesh GetMesh(){
+        if(!IsFense()){
+            return null;
+        }
+        Mesh[] meshes = BlockDataManager.blockDataBase[BlockType.Fense].meshes;
+        byte fenseNumber = GetFenseNumber();
+
+        if(fenseNumber == 0){ // (0,0,0,0) 0
+            return meshes[0];
+        }else if(fenseNumber == 15){ // (1,1,1,1) 15
+            return meshes[5]; 
+        }else if(fenseNumber % 3 == 0){ // (1,1,0,0) 3,6,9,12
+            if(fenseNumber == 3) angle = Direction2D.Forward;
+            else if(fenseNumber == 6) angle = Direction2D.Right;
+            else if(fenseNumber == 12) angle = Direction2D.Back;
+            else angle = Direction2D.Left;
+            return meshes[2];
+        }else if(fenseNumber == 7 || fenseNumber >= 11){ // (1,1,1,0) 7,11,13,14
+            if(fenseShape[0] == false) angle = Direction2D.Back;
+            else if(fenseShape[1] == false) angle = Direction2D.Left;
+            else if(fenseShape[2] == false) angle = Direction2D.Forward;
+            else angle = Direction2D.Right;
+            return meshes[4];
+        }else if(fenseNumber % 5 == 0){ // (1,0,1,0) 5,10
+            angle = (Direction2D)((fenseNumber / 5) % 2);
+            return meshes[3];
+        }else{ // (1,0,0,0) 1,2,4,8
+            if(fenseNumber == 8) angle = Direction2D.Left;
+            else{
+                angle = (Direction2D)(fenseNumber / 2);
+            }
+            return meshes[1];
+        }
+    }
+}
+
