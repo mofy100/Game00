@@ -15,4 +15,5 @@ MemoryCaptures/
 *.userprefs
 *.log
 *.DS_Store
+.vscode/
 
