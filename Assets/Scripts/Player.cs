@@ -23,7 +23,7 @@ public class Player : MonoBehaviour
 
     // Capsule Collider
     private const float colliderHeight = 2.0f;
-    private const float colliderRadius = 0.5f;
+    private const float colliderRadius = 0.25f;
 
     public Camera myCamera;
 
@@ -117,8 +117,11 @@ public class Player : MonoBehaviour
             for(int j = 0; j < 3; j++){
                 int dz = dzs[j];
 
-                if(world.GetBlock(chunkId, new Vector3Int(localId.x + dx, localId.y + 1, localId.z + dz)).IsWall()){
-                    back += Collision(new Vector2(localPos.x, localPos.z), new Vector2(localId.x + dx, localId.z + dz), colliderRadius);
+                Block block = world.GetBlock(chunkId, new Vector3Int(localId.x + dx, localId.y + 1, localId.z + dz));
+                if(block != null){
+                    if(block.IsWall()){
+                        back += Collision(new Vector2(localPos.x, localPos.z), new Vector2(localId.x + dx, localId.z + dz), colliderRadius);
+                    }
                 }
             }
         }

@@ -6,7 +6,7 @@ using static BlockUtils;
 public class Block
 {
     public const float sizeH = 1.0f;
-    public const float sizeV = 0.2f;
+    public const float sizeV = 0.5f;
 
     public BlockType blockType;
     public Vector2Int chunkId;

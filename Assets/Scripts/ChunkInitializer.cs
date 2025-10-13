@@ -8,6 +8,7 @@ public partial class Chunk{
         const int offset = 1000;
         for(int x = 0; x < Chunk.sizeH; x++){
             for(int z = 0; z < Chunk.sizeH; z++){
+                /*
                 int gX = x + chunkId.x * Chunk.sizeH + offset;
                 int gZ = z + chunkId.y * Chunk.sizeH + offset;
                 float alt = 10.0f;
@@ -35,6 +36,11 @@ public partial class Chunk{
                 }
 
                 int maxY = (int)alt;
+                */
+
+                bool isWater = false;
+                int maxY = 6;
+                
 
                 for(int y = 0; y < Chunk.sizeV; y++){
 
@@ -46,7 +52,8 @@ public partial class Chunk{
                     }else if(maxY - 1 <= y && y <= maxY){
                         b = new SoilBlock();
                         b.blockType = BlockType.Soil;
-                        int r = rand.Next(12, 15);
+                        // int r = rand.Next(12, 16);
+                        int r = 15;
                         b.SetBlockLevel((byte)r);
                     }else if(y <= maxY - 2){
                         b = new SoilBlock();

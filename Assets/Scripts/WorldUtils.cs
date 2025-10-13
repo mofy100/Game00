@@ -32,6 +32,10 @@ public partial class World{
             localId.x -= Chunk.sizeH;
             chunkId.x += 1;
         }
+        if(localId.y < 0 || Chunk.sizeV <= localId.y){
+            Debug.Log($"GetBlock() : localId out of bounds {localId}");
+            return null;
+        }
         if(localId.z < 0){
             localId.z += Chunk.sizeH;
             chunkId.y -= 1;

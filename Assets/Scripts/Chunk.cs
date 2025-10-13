@@ -2,8 +2,8 @@ using UnityEngine;
 using System.Collections.Generic;
 
 public partial class Chunk{
-    public const int sizeH = 32;
-    public const int sizeV = 128;
+    public const int sizeH = 16;
+    public const int sizeV = 32;
     private const float updateInterval = 3.0f;
     public bool modified = false;
     public Vector2Int chunkId;
