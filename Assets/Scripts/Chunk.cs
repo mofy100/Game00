@@ -2,9 +2,9 @@ using UnityEngine;
 using System.Collections.Generic;
 
 public partial class Chunk{
-    public const int sizeH = 16;
+    public const int sizeH = 32;
     public const int sizeV = 32;
-    private const float updateInterval = 3.0f;
+    // private const float updateInterval = 3.0f;
     public bool modified = false;
     public Vector2Int chunkId;
 
@@ -23,6 +23,7 @@ public partial class Chunk{
     // BlockType of submesh
     public List<(BlockType, byte)> submeshBlockTypes = new List<(BlockType, byte)>();
 
+    /*
     public bool Update(){
         time += Time.deltaTime * Random.Range(0.0f, 1.0f);
         if(time < updateInterval){
@@ -38,6 +39,7 @@ public partial class Chunk{
         ChunkMeshGenerator.UpdateMesh(this);
         return true;
     }
+    */
 
     public Vector3 GetPosition(){
         return new Vector3(chunkId.x * Chunk.sizeH * Block.sizeH, 0.0f, chunkId.y * Chunk.sizeH * Block.sizeH);

@@ -5,6 +5,9 @@ public partial class Chunk{
     public void InitializeBlocks(){
         System.Random rand = new System.Random(0);
 
+        Biome biome = Biome.Grassland;
+        if(chunkId.x > 0 && chunkId.y > 0) biome = Biome.Forest;
+
         const int offset = 1000;
         for(int x = 0; x < Chunk.sizeH; x++){
             for(int z = 0; z < Chunk.sizeH; z++){
@@ -38,27 +41,39 @@ public partial class Chunk{
                 int maxY = (int)alt;
                 */
 
-                bool isWater = false;
-                int maxY = 6;
-                
+                float alt = 5.0f;
+                int gX = x + chunkId.x * Chunk.sizeH + offset;
+                int gZ = z + chunkId.y * Chunk.sizeH + offset;
 
+                if(biome == Biome.Grassland){
+
+                    float scale = 10.0f;
+                    float height = 20.0f;
+                    float noise = Mathf.PerlinNoise(gX / scale, gZ / scale);
+                    alt += ((noise > 0.6f) ? (noise - 0.6f) : 0.0f) * height;
+
+                    scale = 30.0f;
+                    height = 60.0f;
+                    noise = Mathf.PerlinNoise(gX / scale, gZ / scale);
+                    alt += ((noise > 0.6f) ? (noise - 0.6f) : 0.0f) * height;
+                }else{
+                    alt = 5.0f;
+                }
+
+                int maxY = (int)alt;
                 for(int y = 0; y < Chunk.sizeV; y++){
 
                     Block b;
 
-                    if(isWater && maxY < y && y < maxY + 7){
-                        b = new Block();
-                        b.blockType = BlockType.Water;
-                    }else if(maxY - 1 <= y && y <= maxY){
+                    if(maxY - 1 <= y && y <= maxY){
                         b = new SoilBlock();
                         b.blockType = BlockType.Soil;
                         // int r = rand.Next(12, 16);
                         int r = 15;
                         b.SetBlockLevel((byte)r);
                     }else if(y <= maxY - 2){
-                        b = new SoilBlock();
-                        b.blockType = BlockType.Soil;
-                        b.SetBlockLevel(11);
+                        b = new Block();
+                        b.blockType = BlockType.Rock;
                     }else{
                         b = new Block();
                         b.blockType= BlockType.Empty;
@@ -73,4 +88,12 @@ public partial class Chunk{
         }
         modified = true;
     }
+}
+
+public enum Biome{
+    Grassland,
+    Forest,
+    Desert,
+    Snowfiled,
+    Mountain
 }

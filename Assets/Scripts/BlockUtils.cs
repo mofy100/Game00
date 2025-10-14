@@ -3,26 +3,15 @@ using System;
 using System.Collections.Generic;
 
 public enum BlockType : byte{
-    Soil,
-    Water,
-    Rock,
-    Fense,
-    Tree,
-    Empty,
+    Soil    = 0b_0000_0000,
+    Rock    = 0b_0000_0001,
+    Brick   = 0b_0000_0010,
+    Water   = 0b_0100_0000,
+    Fense   = 0b_1000_0000,
+    Stair   = 0b_1000_0001,
+    Tree    = 0b_1000_1000,
+    Empty   = 0b_1111_1111,
 }
-
-/* BlockType 
-Block
-    Cube
-        Soil
-        Rock
-        Water
-    Object
-        Fense
-        Tree
-    Empty
-*/
-
 
 public enum Direction : byte{
     Right,
@@ -41,23 +30,23 @@ public enum Direction2D : byte{
 }   // multiply 90.0f => rotationY
 
 public static class BlockUtils{
-    private static readonly Dictionary<BlockType, Func<Block>> blockFactory = new()
-    {
-        { BlockType.Soil, () => new SoilBlock() },
-        { BlockType.Fense, () => new FenseBlock() },
-        { BlockType.Tree, () => new ObjectBlock() },
-    };
-
     public static Block CreateBlock(BlockType type){
-        Block b = blockFactory.TryGetValue(type, out var creator) ? creator() : new Block();
+        Block b;
+        if(IsCube(type)){
+            if(IsSoil(type)) b = new SoilBlock();
+            else b = new Block();
+        }else if(IsObject(type)){
+            if(IsFense(type)) b = new FenseBlock();
+            else b = new ObjectBlock();
+        }else{
+            b = new Block();
+        }
         b.blockType = type;
         return b;
     }
 
     public static bool IsCube(BlockType blockType){
-        return blockType == BlockType.Soil || 
-               blockType == BlockType.Water ||
-               blockType == BlockType.Rock;
+        return ((byte)((byte)blockType & 0b_1011_0000) == 0b_0000_0000);
     }
 
     public static bool IsSoil(BlockType blockType){
@@ -69,8 +58,7 @@ public static class BlockUtils{
     }
 
     public static bool IsObject(BlockType blockType){
-        return blockType == BlockType.Fense || 
-               blockType == BlockType.Tree;
+        return ((byte)((byte)blockType & 0b_1111_0000) == 0b_1000_0000);
     }
 
     public static bool IsFense(BlockType blockType){
@@ -82,8 +70,7 @@ public static class BlockUtils{
     }
 
     public static bool IsSolid(BlockType blockType){
-        return blockType == BlockType.Soil ||
-               blockType == BlockType.Rock;
+        return ((byte)((byte)blockType & 0b_1111_0000) == 0b_0000_0000);
     }
 
     public static bool IsLiquid(BlockType blockType){

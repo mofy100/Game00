@@ -17,8 +17,10 @@ public class WorldEditor: MonoBehaviour
     private float intervalTime = 0.1f;
 
     public BlockType holdingBlockType;
+    private byte holdingBlockTypeIndex;
     public byte holdingBlockLevel;
     public TextMeshProUGUI holdingBlockText;
+    BlockType[] blockTypes;
 
     [SerializeField] private InputActionAsset inputActions;
     [SerializeField] float moveSpeed;
@@ -47,6 +49,9 @@ public class WorldEditor: MonoBehaviour
         deleting = false;
         nextActionTime = Mathf.Infinity;
 
+        blockTypes = (BlockType[])Enum.GetValues(typeof(BlockType));
+        holdingBlockTypeIndex = 0;
+        holdingBlockType = blockTypes[holdingBlockTypeIndex];
     }
 
     void Start(){
@@ -170,10 +175,12 @@ public class WorldEditor: MonoBehaviour
     }
 
     void SelectBlock(InputAction.CallbackContext context){
-        holdingBlockType = (BlockType)(((byte)holdingBlockType + 1) % Enum.GetNames(typeof(BlockType)).Length);
-        if(holdingBlockType == BlockType.Empty){
-            holdingBlockType = (BlockType)(((byte)holdingBlockType + 1) % Enum.GetNames(typeof(BlockType)).Length);
+
+        holdingBlockTypeIndex++;
+        if(holdingBlockTypeIndex == blockTypes.Length){
+            holdingBlockTypeIndex = 0;
         }
+        holdingBlockType = blockTypes[holdingBlockTypeIndex];
         holdingBlockText.text = holdingBlockType.ToString();
     }
 

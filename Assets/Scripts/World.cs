@@ -11,7 +11,7 @@ public partial class World : MonoBehaviour  // Other functions are written in "W
     public Dictionary<Vector2Int, Chunk> chunks = new Dictionary<Vector2Int, Chunk>();
 
     private const int initialDrawRange = 2; // at the beginning of the game
-    private const int drawRange = 5;
+    private const int drawRange = 3;
     private const int drawWidth = 2 * drawRange + 1;
     public Vector2Int[] drawingChunkIds;
 
@@ -251,11 +251,12 @@ public partial class World : MonoBehaviour  // Other functions are written in "W
         block.localId = localId;
         chunks[chunkId].SetBlock(block, localId);
 
+        Debug.Log($"AddBlock() : blockType = {blockType}");
+
         if(IsCube(blockType)){
             block.SetBlockLevel(blockLevel);
             ChunkMeshGenerator.UpdateMeshData(chunks[chunkId]);
             ChunkMeshGenerator.UpdateMesh(chunks[chunkId]);
-            Debug.Log("update mesh");
         }
         else if(IsObject(blockType)){
             chunks[chunkId].objects[localId] = blockType;

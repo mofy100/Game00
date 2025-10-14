@@ -10,10 +10,10 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: eef24e29f2a17094da46f7f351437190, type: 3}
-  m_Name: Water
+  m_Name: Brick
   m_EditorClassIdentifier: Assembly-CSharp::BlockData
-  blockType: 64
+  blockType: 2
   mesh: {fileID: 0}
   meshes: []
-  material: {fileID: 2100000, guid: 94bad9745a922ad48ad2affcabdeb147, type: 2}
+  material: {fileID: 2100000, guid: b58fbf46a5e1b464783ecf2c3b0d33c6, type: 2}
   materials: []

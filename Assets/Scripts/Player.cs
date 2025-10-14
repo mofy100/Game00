@@ -38,6 +38,7 @@ public class Player : MonoBehaviour
     }
 
     void Start(){
+        transform.position = new Vector3(transform.position.x, 2.5f, transform.position.z);
         Move(Vector2.zero);
     }
 
@@ -78,12 +79,13 @@ public class Player : MonoBehaviour
 
         currentPosition.x += delta.x;
         currentPosition.z += delta.y;
-
-        Vector2 back = SolveCollision(currentPosition, delta);
+        Vector2 back = SolveCollision(currentPosition);
         currentPosition.x -= back.x;
         currentPosition.z -= back.y;
 
-        currentPosition.y = world.GetGround(currentPosition) * Block.sizeV;
+        // currentPosition.y = world.GetGround(currentPosition) * Block.sizeV;
+        // currentPosition.y = GetY(currentPosition);
+
 
         transform.position = currentPosition;
 
@@ -101,9 +103,17 @@ public class Player : MonoBehaviour
         character.transform.Rotate(0, -angleY, 0, Space.World);
     }
 
+    float GetY(Vector3 position){
+        return 2.5f;
+    }
+
+    Block GetCurrentBlock(Vector3 position){
+        return world.GetBlock(position - Vector3.up * Block.sizeV);
+    }
 
 
-    Vector2 SolveCollision(Vector3 position, Vector2 delta){
+
+    Vector2 SolveCollision(Vector3 position){
         Vector2Int chunkId = world.GetChunkId(position);
         Vector3Int localId = world.GetLocalId(position);
         Vector3 localPos = world.GetLocalPos(position);
@@ -119,7 +129,7 @@ public class Player : MonoBehaviour
 
                 Block block = world.GetBlock(chunkId, new Vector3Int(localId.x + dx, localId.y + 1, localId.z + dz));
                 if(block != null){
-                    if(block.IsWall()){
+                    if(block.IsSolid()){
                         back += Collision(new Vector2(localPos.x, localPos.z), new Vector2(localId.x + dx, localId.z + dz), colliderRadius);
                     }
                 }

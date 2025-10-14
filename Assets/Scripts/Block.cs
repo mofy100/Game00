@@ -21,6 +21,7 @@ public class Block
     public virtual void SetFenseShape(bool flag, byte index){}
     public virtual void SetFenseShape(byte number){}
     public virtual float GetAngle(){return 0;}
+    public virtual float GetTopY(Vector2 position){return GetGlobalPosition().y + Block.sizeV / 2.0f;}
     public virtual void SetAngle(Direction2D angle){}
     public virtual void Update(){}
 

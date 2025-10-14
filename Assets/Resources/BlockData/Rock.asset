@@ -12,8 +12,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: eef24e29f2a17094da46f7f351437190, type: 3}
   m_Name: Rock
   m_EditorClassIdentifier: Assembly-CSharp::BlockData
-  blockType: 2
+  blockType: 1
   mesh: {fileID: 0}
   meshes: []
-  material: {fileID: 2100000, guid: b58fbf46a5e1b464783ecf2c3b0d33c6, type: 2}
+  material: {fileID: 2100000, guid: 9ee00bfbd00b3894b8bf29faba9921fd, type: 2}
   materials: []
