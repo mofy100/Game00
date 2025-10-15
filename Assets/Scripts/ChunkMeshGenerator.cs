@@ -107,14 +107,14 @@ public static class ChunkMeshGenerator{
                         continue;
                     }
                     BlockType blockType = block.blockType;
-                    byte blockLevel = block.GetBlockLevel();
-                    if(!submeshBlockTypes.Contains((blockType, blockLevel))){
-                        submeshBlockTypes.Add((blockType, blockLevel));
+                    byte blockSubType = block.GetBlockSubType();
+                    if(!submeshBlockTypes.Contains((blockType, blockSubType))){
+                        submeshBlockTypes.Add((blockType, blockSubType));
                         subFaces.Add(new List<int>());
                     }
 
                     if(block.IsSolid()){
-                        int submeshId = submeshBlockTypes.IndexOf((blockType, blockLevel));
+                        int submeshId = submeshBlockTypes.IndexOf((blockType, blockSubType));
                         // check 6 faces of the block
                         if(!IsSolid(chunk.blocks, x + 1, y, z)) AddFace(vertices, faces, uvs, subFaces, submeshId, block, Direction.Right);
                         if(!IsSolid(chunk.blocks, x - 1, y, z)) AddFace(vertices, faces, uvs, subFaces, submeshId, block, Direction.Left);
@@ -123,7 +123,7 @@ public static class ChunkMeshGenerator{
                         if(!IsSolid(chunk.blocks, x, y, z + 1)) AddFace(vertices, faces, uvs, subFaces, submeshId, block, Direction.Forward);
                         if(!IsSolid(chunk.blocks, x, y, z - 1)) AddFace(vertices, faces, uvs, subFaces, submeshId, block, Direction.Back);
                     }else if(block.IsLiquid()){
-                        int submeshId = submeshBlockTypes.IndexOf((blockType, blockLevel));
+                        int submeshId = submeshBlockTypes.IndexOf((blockType, blockSubType));
                         AddFace(vertices, faces, uvs, subFaces, submeshId, block, Direction.Up);
                     }
 

@@ -5,7 +5,7 @@ public class Player : MonoBehaviour
 {
     // private MyInputAction controll;
     private Vector2 moveDirection;
-    private InputAction moveAction, rotateAction;
+    private InputAction moveAction, rotateAction, nearAction, farAction;
     private World world;
 
     private Vector2Int chunkId;
@@ -16,6 +16,7 @@ public class Player : MonoBehaviour
     [SerializeField] private InputActionAsset inputActions;
     [SerializeField] float moveSpeed;
     [SerializeField] float rotateSpeed;
+    [SerializeField] float nearSpeed;
     [SerializeField] float cameraHeight;
     [SerializeField] float minRotationX, maxRotationX;
     [SerializeField] GameObject character;
@@ -28,9 +29,11 @@ public class Player : MonoBehaviour
     public Camera myCamera;
 
     void Awake(){
-        var editorActions = inputActions.FindActionMap("Player");
-        moveAction = editorActions.FindAction("Move");
-        rotateAction = editorActions.FindAction("Rotate");
+        var playerActions = inputActions.FindActionMap("Player");
+        moveAction = playerActions.FindAction("Move");
+        rotateAction = playerActions.FindAction("Rotate");
+        nearAction = playerActions.FindAction("CameraNear");
+        farAction = playerActions.FindAction("CameraFar");
 
         world = GameObject.Find("World").GetComponent<World>();
 
@@ -56,15 +59,24 @@ public class Player : MonoBehaviour
             Rotate(rotateDirection);
         }
 
+        float nearValue = nearAction.ReadValue<float>() - farAction.ReadValue<float>();
+        if(nearValue != 0){
+            MoveNear(nearValue);
+        }
+
     }
 
     void OnEnable(){
         moveAction.Enable();
         rotateAction.Enable();
+        nearAction.Enable();
+        farAction.Enable();
     }
     void OnDisable(){
         moveAction.Disable();
         rotateAction.Disable();
+        nearAction.Disable();
+        farAction.Disable();
     }
 
     void Move(Vector2 direction){
@@ -103,6 +115,12 @@ public class Player : MonoBehaviour
         character.transform.Rotate(0, -angleY, 0, Space.World);
     }
 
+    void MoveNear(float value){
+        Vector3 offset = myCamera.transform.position - this.transform.position;
+        offset += value * offset.normalized * nearSpeed * Time.deltaTime;
+        myCamera.transform.position = this.transform.position + offset;
+    }
+
     float GetY(Vector3 position){
         return 2.5f;
     }
@@ -110,8 +128,6 @@ public class Player : MonoBehaviour
     Block GetCurrentBlock(Vector3 position){
         return world.GetBlock(position - Vector3.up * Block.sizeV);
     }
-
-
 
     Vector2 SolveCollision(Vector3 position){
         Vector2Int chunkId = world.GetChunkId(position);

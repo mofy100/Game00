@@ -17,19 +17,6 @@ MonoBehaviour:
   meshes: []
   material: {fileID: 0}
   materials:
-  - {fileID: 2100000, guid: eb0516e21eb3ebe448bbd1698fde4575, type: 2}
-  - {fileID: 2100000, guid: f63c5aef94238fa428b3456983174eac, type: 2}
-  - {fileID: 2100000, guid: 34ffa4dd853580a4c99727edfb208e5a, type: 2}
-  - {fileID: 2100000, guid: 4fb0fe0ec67775b449945ed28a3bc094, type: 2}
-  - {fileID: 2100000, guid: ff7dbe8c3c24a0046884aa36ce0e3a17, type: 2}
-  - {fileID: 2100000, guid: 34a6a60424d108a499fbd29b254280d6, type: 2}
-  - {fileID: 2100000, guid: a93f3fc7fa6404d409633fd844fe06f9, type: 2}
-  - {fileID: 2100000, guid: 0ad273b558294504d9e863c72734e674, type: 2}
-  - {fileID: 2100000, guid: 7210234f5fde42e4a99554123af50b1d, type: 2}
-  - {fileID: 2100000, guid: 8b5300d192252b547b11c7dd1ab698dd, type: 2}
-  - {fileID: 2100000, guid: 8292cff3b76ff284399680ad235edb3c, type: 2}
-  - {fileID: 2100000, guid: 90ac5cdc50c8f59489f7d698d17b5bb4, type: 2}
-  - {fileID: 2100000, guid: 912e069b8bd4c834da7324672d16f452, type: 2}
-  - {fileID: 2100000, guid: b6c141ee74d87d845ab1926f21a072d1, type: 2}
-  - {fileID: 2100000, guid: faae4da84ba52a64e946d0579c374299, type: 2}
   - {fileID: 2100000, guid: 38ee5eba424b59a4eb99047392bfba67, type: 2}
+  - {fileID: 2100000, guid: 58bd0d3e268d23d4ca3a285b535e0e73, type: 2}
+  - {fileID: 2100000, guid: 94b1a3f72358a9c43950ce357b99b2c6, type: 2}

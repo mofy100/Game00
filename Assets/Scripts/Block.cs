@@ -9,14 +9,13 @@ public class Block
     public const float sizeV = 0.5f;
 
     public BlockType blockType;
+    public byte blockSubType = 0;
     public Vector2Int chunkId;
     public Vector3Int localId;
 
-    public virtual byte GetBlockLevel(){return 0;}
-    public virtual byte GetBlockLevelRaw(){return 0;}
-    public virtual void SetBlockLevel(byte level){}
-    public virtual void SetBlockLevelRaw(byte level){}
     public virtual Mesh GetMesh(){return null;}
+    public virtual byte GetBlockSubType(){return blockSubType;}
+    public virtual void SetBlockSubType(byte subType){blockSubType = subType;}
     public virtual byte GetFenseNumber(){return 0;}
     public virtual void SetFenseShape(bool flag, byte index){}
     public virtual void SetFenseShape(byte number){}
@@ -33,31 +32,11 @@ public class Block
     }
     public bool IsEmpty(){ return BlockUtils.IsEmpty(blockType); }
     public bool IsCube(){ return BlockUtils.IsCube(blockType); }
-    public bool IsSoil(){ return BlockUtils.IsSoil(blockType); }
     public bool IsWall(){ return BlockUtils.IsWall(blockType); }
     public bool IsObject(){ return BlockUtils.IsObject(blockType); }
     public bool IsFense(){ return BlockUtils.IsFense(blockType); }
     public bool IsSolid(){ return BlockUtils.IsSolid(blockType); }
     public bool IsLiquid(){ return BlockUtils.IsLiquid(blockType); }
-}
-
-public class SoilBlock : Block{
-    private byte soilLevel; // 0 ~ 255
-    public override byte GetBlockLevel(){ // => 0 ~ 15
-        return (byte)(soilLevel >> 4);
-    }
-    public override byte GetBlockLevelRaw(){ // 0 ~ 255
-        return (byte)(soilLevel);
-    }
-    public override void SetBlockLevel(byte level){
-        soilLevel = (byte)(level << 4);
-    }
-    public override void SetBlockLevelRaw(byte level){
-        soilLevel = level;
-    }
-    public override void Update(){
-        soilLevel += 16;
-    }
 }
 
 public class ObjectBlock : Block{

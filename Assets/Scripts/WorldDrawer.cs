@@ -19,8 +19,8 @@ public partial class World // Other functions are written in "WorldUtils.cs"
 
                 // Draw Blocks
                 for(int k = 0; k < chunk.mesh.subMeshCount; k++){
-                    var (blockType, blockLevel) = chunk.submeshBlockTypes[k];
-                    Material material = BlockDataManager.GetBlockData((BlockType)blockType).GetMaterial(blockLevel);
+                    var (blockType, blockSubType) = chunk.submeshBlockTypes[k];
+                    Material material = BlockDataManager.GetBlockData((BlockType)blockType).GetMaterial(blockSubType);
                     Graphics.DrawMesh(chunk.mesh, matrix, material, 0, null, k);
                 }
 

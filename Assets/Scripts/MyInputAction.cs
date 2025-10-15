@@ -109,6 +109,24 @@ public partial class @MyInputAction: IInputActionCollection2, IDisposable
                     ""processors"": """",
                     ""interactions"": """",
                     ""initialStateCheck"": true
+                },
+                {
+                    ""name"": ""CameraNear"",
+                    ""type"": ""Button"",
+                    ""id"": ""e664fcd4-1f74-4d2f-814f-aebcd95d21ef"",
+                    ""expectedControlType"": """",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": false
+                },
+                {
+                    ""name"": ""CameraFar"",
+                    ""type"": ""Button"",
+                    ""id"": ""346ff14b-cd02-4981-9747-970ce4c7ffa6"",
+                    ""expectedControlType"": """",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": false
                 }
             ],
             ""bindings"": [
@@ -131,6 +149,28 @@ public partial class @MyInputAction: IInputActionCollection2, IDisposable
                     ""processors"": """",
                     ""groups"": """",
                     ""action"": ""Rotate"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""818a78b5-9b96-49a2-b3dd-135f945b5301"",
+                    ""path"": ""<Gamepad>/dpad/up"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""CameraNear"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""33317ed9-dff5-4a7d-a41b-5bc19b8fb236"",
+                    ""path"": ""<Gamepad>/dpad/down"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""CameraFar"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": false
                 }
@@ -319,6 +359,8 @@ public partial class @MyInputAction: IInputActionCollection2, IDisposable
         m_Player = asset.FindActionMap("Player", throwIfNotFound: true);
         m_Player_Move = m_Player.FindAction("Move", throwIfNotFound: true);
         m_Player_Rotate = m_Player.FindAction("Rotate", throwIfNotFound: true);
+        m_Player_CameraNear = m_Player.FindAction("CameraNear", throwIfNotFound: true);
+        m_Player_CameraFar = m_Player.FindAction("CameraFar", throwIfNotFound: true);
         // Editor
         m_Editor = asset.FindActionMap("Editor", throwIfNotFound: true);
         m_Editor_Move = m_Editor.FindAction("Move", throwIfNotFound: true);
@@ -415,6 +457,8 @@ public partial class @MyInputAction: IInputActionCollection2, IDisposable
     private List<IPlayerActions> m_PlayerActionsCallbackInterfaces = new List<IPlayerActions>();
     private readonly InputAction m_Player_Move;
     private readonly InputAction m_Player_Rotate;
+    private readonly InputAction m_Player_CameraNear;
+    private readonly InputAction m_Player_CameraFar;
     /// <summary>
     /// Provides access to input actions defined in input action map "Player".
     /// </summary>
@@ -434,6 +478,14 @@ public partial class @MyInputAction: IInputActionCollection2, IDisposable
         /// Provides access to the underlying input action "Player/Rotate".
         /// </summary>
         public InputAction @Rotate => m_Wrapper.m_Player_Rotate;
+        /// <summary>
+        /// Provides access to the underlying input action "Player/CameraNear".
+        /// </summary>
+        public InputAction @CameraNear => m_Wrapper.m_Player_CameraNear;
+        /// <summary>
+        /// Provides access to the underlying input action "Player/CameraFar".
+        /// </summary>
+        public InputAction @CameraFar => m_Wrapper.m_Player_CameraFar;
         /// <summary>
         /// Provides access to the underlying input action map instance.
         /// </summary>
@@ -466,6 +518,12 @@ public partial class @MyInputAction: IInputActionCollection2, IDisposable
             @Rotate.started += instance.OnRotate;
             @Rotate.performed += instance.OnRotate;
             @Rotate.canceled += instance.OnRotate;
+            @CameraNear.started += instance.OnCameraNear;
+            @CameraNear.performed += instance.OnCameraNear;
+            @CameraNear.canceled += instance.OnCameraNear;
+            @CameraFar.started += instance.OnCameraFar;
+            @CameraFar.performed += instance.OnCameraFar;
+            @CameraFar.canceled += instance.OnCameraFar;
         }
 
         /// <summary>
@@ -483,6 +541,12 @@ public partial class @MyInputAction: IInputActionCollection2, IDisposable
             @Rotate.started -= instance.OnRotate;
             @Rotate.performed -= instance.OnRotate;
             @Rotate.canceled -= instance.OnRotate;
+            @CameraNear.started -= instance.OnCameraNear;
+            @CameraNear.performed -= instance.OnCameraNear;
+            @CameraNear.canceled -= instance.OnCameraNear;
+            @CameraFar.started -= instance.OnCameraFar;
+            @CameraFar.performed -= instance.OnCameraFar;
+            @CameraFar.canceled -= instance.OnCameraFar;
         }
 
         /// <summary>
@@ -795,6 +859,20 @@ public partial class @MyInputAction: IInputActionCollection2, IDisposable
         /// <seealso cref="UnityEngine.InputSystem.InputAction.performed" />
         /// <seealso cref="UnityEngine.InputSystem.InputAction.canceled" />
         void OnRotate(InputAction.CallbackContext context);
+        /// <summary>
+        /// Method invoked when associated input action "CameraNear" is either <see cref="UnityEngine.InputSystem.InputAction.started" />, <see cref="UnityEngine.InputSystem.InputAction.performed" /> or <see cref="UnityEngine.InputSystem.InputAction.canceled" />.
+        /// </summary>
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.started" />
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.performed" />
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.canceled" />
+        void OnCameraNear(InputAction.CallbackContext context);
+        /// <summary>
+        /// Method invoked when associated input action "CameraFar" is either <see cref="UnityEngine.InputSystem.InputAction.started" />, <see cref="UnityEngine.InputSystem.InputAction.performed" /> or <see cref="UnityEngine.InputSystem.InputAction.canceled" />.
+        /// </summary>
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.started" />
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.performed" />
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.canceled" />
+        void OnCameraFar(InputAction.CallbackContext context);
     }
     /// <summary>
     /// Interface to implement callback methods for all input action callbacks associated with input actions defined by "Editor" which allows adding and removing callbacks.

@@ -17,8 +17,6 @@ public class WorldLoader : MonoBehaviour{
                     writer.Write((byte)block.blockType);
                     if(block.IsFense()){
                         writer.Write((byte)block.GetFenseNumber());
-                    }else if(block.IsSoil()){
-                        writer.Write((byte)block.GetBlockLevelRaw());
                     }
                 }
             }
@@ -50,9 +48,6 @@ public class WorldLoader : MonoBehaviour{
                             byte fenseNumber = reader.ReadByte();
                             b.SetFenseShape(fenseNumber);
                         }
-                    }else if(b.IsSoil()){
-                        byte blockLevel = reader.ReadByte();
-                        b.SetBlockLevelRaw(blockLevel);
                     }
                 }
             }

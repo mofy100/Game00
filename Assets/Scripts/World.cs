@@ -242,7 +242,7 @@ public partial class World : MonoBehaviour  // Other functions are written in "W
         }
     }
 
-    public void AddBlock(Block oldBlock, BlockType blockType, byte blockLevel, Direction2D angle = Direction2D.Forward){
+    public void AddBlock(Block oldBlock, BlockType blockType, byte blockSubType, Direction2D angle = Direction2D.Forward){
         Vector2Int chunkId = oldBlock.chunkId;
         Vector3Int localId = oldBlock.localId;
         Block block = CreateBlock(blockType);
@@ -254,7 +254,7 @@ public partial class World : MonoBehaviour  // Other functions are written in "W
         Debug.Log($"AddBlock() : blockType = {blockType}");
 
         if(IsCube(blockType)){
-            block.SetBlockLevel(blockLevel);
+            block.SetBlockSubType(blockSubType);
             ChunkMeshGenerator.UpdateMeshData(chunks[chunkId]);
             ChunkMeshGenerator.UpdateMesh(chunks[chunkId]);
         }

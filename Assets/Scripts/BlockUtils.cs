@@ -13,6 +13,12 @@ public enum BlockType : byte{
     Empty   = 0b_1111_1111,
 }
 
+public enum SoilType : byte{
+    Grass   = 0b_0000_0000,
+    Barren  = 0b_0000_0001,
+    Sand    = 0b_0000_0010,
+}
+
 public enum Direction : byte{
     Right,
     Left,
@@ -33,8 +39,7 @@ public static class BlockUtils{
     public static Block CreateBlock(BlockType type){
         Block b;
         if(IsCube(type)){
-            if(IsSoil(type)) b = new SoilBlock();
-            else b = new Block();
+            b = new Block();
         }else if(IsObject(type)){
             if(IsFense(type)) b = new FenseBlock();
             else b = new ObjectBlock();
@@ -49,10 +54,6 @@ public static class BlockUtils{
         return ((byte)((byte)blockType & 0b_1011_0000) == 0b_0000_0000);
     }
 
-    public static bool IsSoil(BlockType blockType){
-        return blockType == BlockType.Soil;
-    }
-    
     public static bool IsWall(BlockType blockType){
         return blockType == BlockType.Rock;
     }

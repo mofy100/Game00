@@ -925,8 +925,9 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Player
   inputActions: {fileID: -944628639613478452, guid: 7257aa486d61c8a49ab09ee5870b4945, type: 3}
-  moveSpeed: 10
-  rotateSpeed: 180
+  moveSpeed: 4
+  rotateSpeed: 270
+  nearSpeed: 10
   cameraHeight: 3
   minRotationX: 0
   maxRotationX: 90

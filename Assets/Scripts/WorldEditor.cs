@@ -18,7 +18,7 @@ public class WorldEditor: MonoBehaviour
 
     public BlockType holdingBlockType;
     private byte holdingBlockTypeIndex;
-    public byte holdingBlockLevel;
+    public byte holdingBlockSubType;
     public TextMeshProUGUI holdingBlockText;
     BlockType[] blockTypes;
 
@@ -153,7 +153,7 @@ public class WorldEditor: MonoBehaviour
     void ExecAdd(){
         Hit hit = world.ReleaseRay(myCamera.transform.position,myCamera.transform.forward);
         if(hit != null){
-            world.AddBlock(hit.space, holdingBlockType, holdingBlockLevel, this.GetDirection2D());
+            world.AddBlock(hit.space, holdingBlockType, holdingBlockSubType, this.GetDirection2D());
         }
     }
 

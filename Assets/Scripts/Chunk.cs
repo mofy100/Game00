@@ -8,8 +8,6 @@ public partial class Chunk{
     public bool modified = false;
     public Vector2Int chunkId;
 
-    private float time = 0.0f;
-
     // Blocks
     public Block[,,] blocks = new Block[sizeH, sizeV, sizeH];
     public int[,] grounds = new int[sizeH, sizeH];
