@@ -11,10 +11,9 @@ public partial class World : MonoBehaviour  // Other functions are written in "W
     public Dictionary<Vector2Int, Chunk> chunks = new Dictionary<Vector2Int, Chunk>();
 
     private const int initialDrawRange = 2; // at the beginning of the game
-    private const int drawRange = 3;
+    private const int drawRange = 5;
     private const int drawWidth = 2 * drawRange + 1;
     public Vector2Int[] drawingChunkIds;
-
 
     private GameObject user;
     private Player player;
@@ -139,7 +138,7 @@ public partial class World : MonoBehaviour  // Other functions are written in "W
         float maxDistance = 100.0f;
         Vector3 currentPos = origin;
         if(OutOfBounds(currentPos)){
-            Debug.Log("ReleaseRay() : origin is out of bounds");
+            // Debug.Log("ReleaseRay() : origin is out of bounds");
             return null;
         }
         Block currentBlock = GetBlock(origin);
@@ -251,8 +250,6 @@ public partial class World : MonoBehaviour  // Other functions are written in "W
         block.localId = localId;
         chunks[chunkId].SetBlock(block, localId);
 
-        Debug.Log($"AddBlock() : blockType = {blockType}");
-
         if(IsCube(blockType)){
             block.SetBlockSubType(blockSubType);
             ChunkMeshGenerator.UpdateMeshData(chunks[chunkId]);
@@ -292,8 +289,8 @@ public partial class World : MonoBehaviour  // Other functions are written in "W
         Direction2D[] directions = (Direction2D[])Enum.GetValues(typeof(Direction2D));
 
         if(!block.IsFense()){
-            Debug.Log("This block is not a fense");
-                return;
+            // Debug.Log("This block is not a fense");
+            return;
         }
 
         Vector2Int chunkId = block.chunkId;
@@ -333,8 +330,8 @@ public partial class World : MonoBehaviour  // Other functions are written in "W
         Direction2D[] directions = (Direction2D[])Enum.GetValues(typeof(Direction2D));
 
         if(!block.IsFense()){
-            Debug.Log("This block is not a fense");
-                return;
+            // Debug.Log("This block is not a fense");
+            return;
         }
 
         Vector2Int chunkId = block.chunkId;

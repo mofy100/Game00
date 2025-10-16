@@ -599,7 +599,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::WorldEditor
   holdingBlockType: 3
-  holdingBlockLevel: 15
+  holdingBlockSubType: 0
   holdingBlockText: {fileID: 2091607036}
   inputActions: {fileID: -944628639613478452, guid: 7257aa486d61c8a49ab09ee5870b4945, type: 3}
   moveSpeed: 10
@@ -1176,7 +1176,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 0154cc12086d6d24787efc515ac87fdc, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::GameController
-  editorMode: 0
+  editorMode: 1
 --- !u!4 &1844454015
 Transform:
   m_ObjectHideFlags: 0
@@ -1294,15 +1294,15 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 8412924816391038690, guid: 1983a83a31b299e43991b7c50fda0ad3, type: 3}
       propertyPath: m_LocalScale.x
-      value: 0.5
+      value: 0.25
       objectReference: {fileID: 0}
     - target: {fileID: 8412924816391038690, guid: 1983a83a31b299e43991b7c50fda0ad3, type: 3}
       propertyPath: m_LocalScale.y
-      value: 0.5
+      value: 0.25
       objectReference: {fileID: 0}
     - target: {fileID: 8412924816391038690, guid: 1983a83a31b299e43991b7c50fda0ad3, type: 3}
       propertyPath: m_LocalScale.z
-      value: 0.5
+      value: 0.25
       objectReference: {fileID: 0}
     - target: {fileID: 8412924816391038690, guid: 1983a83a31b299e43991b7c50fda0ad3, type: 3}
       propertyPath: m_LocalPosition.x
@@ -1310,7 +1310,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 8412924816391038690, guid: 1983a83a31b299e43991b7c50fda0ad3, type: 3}
       propertyPath: m_LocalPosition.y
-      value: 0
+      value: -0.25
       objectReference: {fileID: 0}
     - target: {fileID: 8412924816391038690, guid: 1983a83a31b299e43991b7c50fda0ad3, type: 3}
       propertyPath: m_LocalPosition.z

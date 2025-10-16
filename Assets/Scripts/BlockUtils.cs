@@ -14,9 +14,10 @@ public enum BlockType : byte{
 }
 
 public enum SoilType : byte{
-    Grass   = 0b_0000_0000,
+    Green   = 0b_0000_0000,
     Barren  = 0b_0000_0001,
     Sand    = 0b_0000_0010,
+    Olive   = 0b_0000_0011,
 }
 
 public enum Direction : byte{

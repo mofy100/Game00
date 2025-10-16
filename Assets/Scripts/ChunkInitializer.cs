@@ -1,7 +1,41 @@
 using UnityEngine;
 using System.Collections.Generic;
 
+public class BiomeLocation {
+    public Vector2Int position;
+    public float size;
+    public Biome biome;
+};
+
 public partial class Chunk{
+    public List<BiomeLocation> biomeLocations = new List<BiomeLocation>(){
+        new BiomeLocation{
+            position = new Vector2Int(0, 0),
+            size = 30.0f,
+            biome = Biome.Savana
+        },
+        new BiomeLocation{
+            position = new Vector2Int(100, 0),
+            size = 30.0f,
+            biome = Biome.Desert
+        },
+        new BiomeLocation{
+            position = new Vector2Int(-100, 0),
+            size = 30.0f,
+            biome = Biome.Mountain
+        },
+        new BiomeLocation{
+            position = new Vector2Int(0, 100),
+            size = 30.0f,
+            biome = Biome.Savana
+        },
+        new BiomeLocation{
+            position = new Vector2Int(0, -100),
+            size = 30.0f,
+            biome = Biome.Grassland
+        },
+    };
+    
     public void InitializeBlocks(){
         System.Random rand = new System.Random(0);
 
@@ -10,11 +44,15 @@ public partial class Chunk{
         for(int x = 0; x < Chunk.sizeH; x++){
             for(int z = 0; z < Chunk.sizeH; z++){
 
-                int gX = x + chunkId.x * Chunk.sizeH + offset;
-                int gZ = z + chunkId.y * Chunk.sizeH + offset;
+                int gX = x + chunkId.x * Chunk.sizeH;
+                int gZ = z + chunkId.y * Chunk.sizeH;
+
                 float alt = 5.0f;
 
                 var (biome, factor) = GetBiome(gX, gZ);
+                gX += offset;
+                gZ += offset;
+
                 alt += GetAlt(gX, gZ, biome) * factor;
                 int maxY = (int)alt;
 
@@ -24,14 +62,19 @@ public partial class Chunk{
                         b = new Block();
                         b.blockType = BlockType.Soil;
                         if(biome == Biome.Grassland){
-                            b.SetBlockSubType((byte)SoilType.Grass);
+                            b.SetBlockSubType((byte)SoilType.Green);
+                        }else if(biome == Biome.Savana){
+                            b.SetBlockSubType((byte)SoilType.Olive);
                         }else{
                             b.SetBlockSubType((byte)SoilType.Sand);
+
                         }
                     }else if(y <= maxY - 1){
                         b = new Block();
                         b.blockType = BlockType.Soil;
                         if(biome == Biome.Grassland){
+                            b.SetBlockSubType((byte)SoilType.Barren);
+                        }else if(biome == Biome.Savana){
                             b.SetBlockSubType((byte)SoilType.Barren);
                         }else{
                             b.SetBlockSubType((byte)SoilType.Sand);
@@ -51,19 +94,44 @@ public partial class Chunk{
         modified = true;
     }
 
-    (Biome, float) GetBiome(int gX, int gZ){
-        Biome biome;
-        float factor = 1.0f;
+    (Biome, float) GetBiome(int x, int z){
+        Biome thisBiome = Biome.Grassland;
+        float noiseScale = 500.0f;
+        float noiseAmplitude = 100.0f;
+        Vector2 thisPoint = new Vector2(x, z);
+        float minDistance = float.MaxValue;
+        foreach(BiomeLocation location in biomeLocations){
+            float dist = Vector2.Distance(thisPoint, location.position);
+            float nx = Mathf.PerlinNoise(x / noiseScale + location.position.x, z / noiseScale + location.position.y);
+            float noise = (nx - 0.5f) * 2f * noiseAmplitude; // -amplitude〜+amplitude に揺らぐ
+            dist += noise;
 
-        float scale = 150.0f;
-        float noise = Mathf.PerlinNoise(gX / scale, gZ / scale);
-        biome = (noise > 0.5f) ? Biome.Grassland : Biome.Desert;
-        float noiseAbs = Mathf.Abs(noise - 0.5f);
-        if(noiseAbs < 0.1f){
-            factor *= noiseAbs / 0.1f;
+            if(dist < minDistance){
+                minDistance = dist;
+                thisBiome = location.biome;
+            }
         }
+        return (thisBiome, 1.0f);
 
-        return (biome, factor);
+        /*
+        float minDistance = 100000.0f;
+        Biome thisBiome = Biome.Desert;
+        float factor = 1.0f;
+        foreach(BiomeLocation location in biomeLocations){
+            float distance = (x - location.position.x) * (x - location.position.x) + (z - location.position.y) * (z - location.position.y);
+            distance = Mathf.Sqrt(distance);
+            distance /= location.size;
+            if(distance < 1.0f){
+                if(distance < minDistance){
+                    minDistance = distance;
+                    thisBiome = location.biome;
+                    factor = 1.0f;
+                }
+            }else{
+                thisBiome = Biome.Grassland;
+            }
+        }
+        */
     }
 
     float GetAlt(int gX, int gZ, Biome biome){
@@ -73,23 +141,34 @@ public partial class Chunk{
         float noise;
 
         if(biome == Biome.Grassland){
+        }else if(biome == Biome.Mountain){
             scale = 10.0f;
             height = 20.0f;
             noise = Mathf.PerlinNoise(gX / scale, gZ / scale);
-            alt += ((noise > 0.6f) ? (noise - 0.6f) : 0.0f) * height;
+            alt += ((noise > 0.5f) ? (noise - 0.5f) : 0.0f) * height;
 
             scale = 30.0f;
             height = 60.0f;
             noise = Mathf.PerlinNoise(gX / scale, gZ / scale);
-            alt += ((noise > 0.6f) ? (noise - 0.6f) : 0.0f) * height;
-        }else if(biome == Biome.Desert){
-            scale = 5.0f;
+            alt += ((noise > 0.5f) ? (noise - 0.5f) : 0.0f) * height;
+        }else if(biome == Biome.Savana){
+            scale = 10.0f;
             height = 10.0f;
             noise = Mathf.PerlinNoise(gX / scale, gZ / scale);
             alt += ((noise > 0.6f) ? (noise - 0.6f) : 0.0f) * height;
 
+            scale = 30.0f;
+            height = 10.0f;
+            noise = Mathf.PerlinNoise(gX / scale, gZ / scale);
+            alt += ((noise > 0.6f) ? (noise - 0.6f) : 0.0f) * height;
+        }else if(biome == Biome.Desert){
             scale = 10.0f;
-            height = 20.0f;
+            height = 10.0f;
+            noise = Mathf.PerlinNoise(gX / scale, gZ / scale);
+            alt += ((noise > 0.6f) ? (noise - 0.6f) : 0.0f) * height;
+
+            scale = 30.0f;
+            height = 10.0f;
             noise = Mathf.PerlinNoise(gX / scale, gZ / scale);
             alt += ((noise > 0.6f) ? (noise - 0.6f) : 0.0f) * height;
         }else{
@@ -103,6 +182,7 @@ public partial class Chunk{
 
 public enum Biome{
     Grassland,
+    Savana,
     Forest,
     Desert,
     Snowfiled,

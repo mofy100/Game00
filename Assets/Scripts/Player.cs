@@ -1,11 +1,12 @@
 using UnityEngine;
 using UnityEngine.InputSystem;
+using System.Collections;
 
 public class Player : MonoBehaviour
 {
     // private MyInputAction controll;
     private Vector2 moveDirection;
-    private InputAction moveAction, rotateAction, nearAction, farAction;
+    private InputAction moveAction, rotateAction, jumpAction, nearAction, farAction;
     private World world;
 
     private Vector2Int chunkId;
@@ -23,8 +24,12 @@ public class Player : MonoBehaviour
     private Animator characterAnimator;
 
     // Capsule Collider
-    private const float colliderHeight = 2.0f;
+    private const float colliderHeight = 0.25f;
     private const float colliderRadius = 0.25f;
+    
+    private bool isJumping = false;
+    private float velocityY = 0.0f;
+    private float gravity = 9.8f;
 
     public Camera myCamera;
 
@@ -32,6 +37,7 @@ public class Player : MonoBehaviour
         var playerActions = inputActions.FindActionMap("Player");
         moveAction = playerActions.FindAction("Move");
         rotateAction = playerActions.FindAction("Rotate");
+        jumpAction = playerActions.FindAction("Jump");
         nearAction = playerActions.FindAction("CameraNear");
         farAction = playerActions.FindAction("CameraFar");
 
@@ -41,7 +47,7 @@ public class Player : MonoBehaviour
     }
 
     void Start(){
-        transform.position = new Vector3(transform.position.x, 2.5f, transform.position.z);
+        transform.position = new Vector3(transform.position.x, 3.0f, transform.position.z);
         Move(Vector2.zero);
     }
 
@@ -54,6 +60,28 @@ public class Player : MonoBehaviour
         }else{
             characterAnimator.SetBool("moving", false);
         }
+
+        /*
+        bool jump = (jumpAction.ReadValue<float>() >= 0.1f);
+        if(jump){
+            if(!isJumping){
+                isJumping = true;
+                velocityY = 3.0f;
+            }
+        }
+        */
+
+        transform.position += Vector3.up * velocityY * Time.deltaTime;
+        if(isJumping){
+            velocityY -= gravity * Time.deltaTime;
+        }else{
+            velocityY = 0.0f;
+        }
+
+        Debug.Log($"jumping {isJumping} velocity {velocityY}");
+
+        transform.position = SolveCollision(transform.position);
+
         Vector2 rotateDirection = rotateAction.ReadValue<Vector2>();
         if(rotateDirection != Vector2.zero){
             Rotate(rotateDirection);
@@ -69,12 +97,14 @@ public class Player : MonoBehaviour
     void OnEnable(){
         moveAction.Enable();
         rotateAction.Enable();
+        jumpAction.Enable();
         nearAction.Enable();
         farAction.Enable();
     }
     void OnDisable(){
         moveAction.Disable();
         rotateAction.Disable();
+        jumpAction.Disable();
         nearAction.Disable();
         farAction.Disable();
     }
@@ -91,9 +121,13 @@ public class Player : MonoBehaviour
 
         currentPosition.x += delta.x;
         currentPosition.z += delta.y;
-        Vector2 back = SolveCollision(currentPosition);
-        currentPosition.x -= back.x;
-        currentPosition.z -= back.y;
+
+        /*
+        Block b = world.GetBlock(currentPosition);
+        Debug.Log($"b.blockTYpe {b.blockType} position {b.localId}");
+        Block bb = world.GetBlock(currentPosition - Vector3.up * Block.sizeV);
+        Debug.Log($"bb.blockTYpe {bb.blockType} position {bb.localId}");
+        */
 
         // currentPosition.y = world.GetGround(currentPosition) * Block.sizeV;
         // currentPosition.y = GetY(currentPosition);
@@ -115,43 +149,71 @@ public class Player : MonoBehaviour
         character.transform.Rotate(0, -angleY, 0, Space.World);
     }
 
+    void Jump(InputAction.CallbackContext context){
+    }
+
+
     void MoveNear(float value){
         Vector3 offset = myCamera.transform.position - this.transform.position;
         offset += value * offset.normalized * nearSpeed * Time.deltaTime;
         myCamera.transform.position = this.transform.position + offset;
     }
 
-    float GetY(Vector3 position){
-        return 2.5f;
-    }
+    Vector3 SolveCollision(Vector3 position){
 
-    Block GetCurrentBlock(Vector3 position){
-        return world.GetBlock(position - Vector3.up * Block.sizeV);
-    }
+        Vector3 newPosition = position;
 
-    Vector2 SolveCollision(Vector3 position){
         Vector2Int chunkId = world.GetChunkId(position);
         Vector3Int localId = world.GetLocalId(position);
         Vector3 localPos = world.GetLocalPos(position);
 
         int[] dxs = new int[] {-1, 0, 1};
         int[] dzs = new int[] {-1, 0, 1};
+        Block block;
 
-        Vector2 back = Vector2.zero;
         for(int i = 0; i < 3; i++){
             int dx = dxs[i];
             for(int j = 0; j < 3; j++){
                 int dz = dzs[j];
 
-                Block block = world.GetBlock(chunkId, new Vector3Int(localId.x + dx, localId.y + 1, localId.z + dz));
+                block = world.GetBlock(chunkId, new Vector3Int(localId.x + dx, localId.y, localId.z + dz));
                 if(block != null){
                     if(block.IsSolid()){
-                        back += Collision(new Vector2(localPos.x, localPos.z), new Vector2(localId.x + dx, localId.z + dz), colliderRadius);
+                        Vector2 back2D = Collision(new Vector2(localPos.x, localPos.z), new Vector2(localId.x + dx, localId.z + dz), colliderRadius);
+                        newPosition -= new Vector3(back2D.x, 0.0f, back2D.y);
+                        localPos = world.GetLocalPos(newPosition);
                     }
                 }
             }
         }
-        return back;
+
+        /*
+        for(int i = 0; i < 3; i++){
+            int dx = dxs[i];
+            for(int j = 0; j < 3; j++){
+                int dz = dzs[j];
+
+                block = world.GetBlock(chunkId, new Vector3Int(localId.x + dx, localId.y - 1, localId.z + dz));
+                if(block != null){
+                    if(block.IsSolid()){
+                        if(newPosition.y - block.GetGlobalPosition().y < colliderHeight + Block.sizeV / 2.0f){
+                            Vector2 back = Collision(new Vector2(localPos.x, localPos.z), new Vector2(localId.x + dx, localId.z + dz), colliderRadius);
+                            Debug.Log($"localId {localId} block {block.blockType} back {back}");
+                            if(back != Vector2.zero || ((dx == 0) && (dz == 0))){
+                                newPosition.y = block.GetGlobalPosition().y + Block.sizeV / 2.0f + colliderHeight;
+                                isJumping = false;
+                                return newPosition;
+                            }
+                        }
+                    }
+                }
+            }
+        }
+        isJumping = true;
+        */
+
+        return newPosition;
+
     }
 
     Vector2 Collision(Vector2 circle, Vector2 square, float radius){

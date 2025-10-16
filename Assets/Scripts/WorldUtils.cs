@@ -14,7 +14,7 @@ public partial class World{
         if(localId.x < 0 || Chunk.sizeH <= localId.x ||
            localId.y < 0 || Chunk.sizeV <= localId.y ||
            localId.z < 0 || Chunk.sizeH <= localId.z){
-            Debug.Log($"position is out of bounds {position}");
+            // Debug.Log($"position is out of bounds {position}");
             return null;
         }
         return chunks[chunkId].blocks[localId.x, localId.y, localId.z];
@@ -22,7 +22,7 @@ public partial class World{
 
     public Block GetBlock(Vector2Int chunkId, Vector3Int localId){
         if(!chunks.ContainsKey(chunkId)){
-            Debug.Log($"chunk {chunkId} does not exist");
+            // Debug.Log($"chunk {chunkId} does not exist");
             return null;
         }
         if(localId.x < 0){
@@ -33,7 +33,7 @@ public partial class World{
             chunkId.x += 1;
         }
         if(localId.y < 0 || Chunk.sizeV <= localId.y){
-            Debug.Log($"GetBlock() : localId out of bounds {localId}");
+            // Debug.Log($"GetBlock() : localId out of bounds {localId}");
             return null;
         }
         if(localId.z < 0){
