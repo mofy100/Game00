@@ -61,7 +61,6 @@ public class Player : MonoBehaviour
             characterAnimator.SetBool("moving", false);
         }
 
-        /*
         bool jump = (jumpAction.ReadValue<float>() >= 0.1f);
         if(jump){
             if(!isJumping){
@@ -69,7 +68,6 @@ public class Player : MonoBehaviour
                 velocityY = 3.0f;
             }
         }
-        */
 
         transform.position += Vector3.up * velocityY * Time.deltaTime;
         if(isJumping){
@@ -121,17 +119,6 @@ public class Player : MonoBehaviour
 
         currentPosition.x += delta.x;
         currentPosition.z += delta.y;
-
-        /*
-        Block b = world.GetBlock(currentPosition);
-        Debug.Log($"b.blockTYpe {b.blockType} position {b.localId}");
-        Block bb = world.GetBlock(currentPosition - Vector3.up * Block.sizeV);
-        Debug.Log($"bb.blockTYpe {bb.blockType} position {bb.localId}");
-        */
-
-        // currentPosition.y = world.GetGround(currentPosition) * Block.sizeV;
-        // currentPosition.y = GetY(currentPosition);
-
 
         transform.position = currentPosition;
 
@@ -187,7 +174,6 @@ public class Player : MonoBehaviour
             }
         }
 
-        /*
         for(int i = 0; i < 3; i++){
             int dx = dxs[i];
             for(int j = 0; j < 3; j++){
@@ -210,7 +196,6 @@ public class Player : MonoBehaviour
             }
         }
         isJumping = true;
-        */
 
         return newPosition;
 

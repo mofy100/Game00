@@ -12,6 +12,9 @@ public class BlockData : ScriptableObject{
 
     public Material GetMaterial(byte blockSubType = 0){
         if(material == null){
+            if(blockSubType >= materials.Length){
+                Debug.Log($"blockType {blockType} subType {blockSubType}");
+            }
             return materials[blockSubType];
         }else{
             return material;
