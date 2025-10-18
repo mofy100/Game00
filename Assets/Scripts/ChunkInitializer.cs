@@ -43,19 +43,19 @@ public partial class Chunk{
                 gX += offsetX;
                 gZ += offsetZ;
 
-                noise = Mathf.PerlinNoise(gX / 100.0f, gZ / 100.0f);
+                noise = Mathf.PerlinNoise(gX / 300.0f, gZ / 300.0f);
                 amp = 0.01f;
                 if(Mathf.Abs(noise - 0.5f) < 0.3f){
-                    noise = 0.5f + (noise - 0.5f) * 0.8f;
+                    noise = 0.5f + (noise - 0.5f) * 0.9f;
                 }
                 noise += (float)rand.NextDouble() * (2 * amp) - amp;
                 noise = Mathf.Clamp01(noise);
                 noise *= (8.0f - 0.000001f);
                 float soilTemperature = noise;
 
-                noise = Mathf.PerlinNoise(gX / 500.0f + 10.0f, gZ / 500.0f + 10.0f);
-                amp = 0.05f;
-                noise = 0.5f + (noise - 0.5f) * 1.5f;
+                noise = Mathf.PerlinNoise(gX / 100.0f + 10.0f, gZ / 100.0f + 10.0f);
+                amp = 0.01f;
+                noise = 0.5f + (noise - 0.5f) * 0.9f;
                 noise += (float)rand.NextDouble() * (2 * amp) - amp;
                 noise = Mathf.Clamp01(noise);
                 noise *= (8.0f - 0.000001f);

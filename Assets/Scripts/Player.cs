@@ -65,9 +65,11 @@ public class Player : MonoBehaviour
         if(jump){
             if(!isJumping){
                 isJumping = true;
-                velocityY = 3.0f;
+                velocityY = 4.0f;
             }
         }
+
+        transform.position = SolveCollisionXZ(transform.position);
 
         transform.position += Vector3.up * velocityY * Time.deltaTime;
         if(isJumping){
@@ -78,7 +80,8 @@ public class Player : MonoBehaviour
 
         Debug.Log($"jumping {isJumping} velocity {velocityY}");
 
-        transform.position = SolveCollision(transform.position);
+        transform.position = SolveCollisionY(transform.position);
+        // transform.position = SolveCollision(transform.position);
 
         Vector2 rotateDirection = rotateAction.ReadValue<Vector2>();
         if(rotateDirection != Vector2.zero){
@@ -146,6 +149,75 @@ public class Player : MonoBehaviour
         myCamera.transform.position = this.transform.position + offset;
     }
 
+    Vector3 SolveCollisionXZ(Vector3 position){
+
+        Vector3 newPosition = position;
+
+        Vector2Int chunkId = world.GetChunkId(position);
+        Vector3Int localId = world.GetLocalId(position);
+        Vector3 localPos = world.GetLocalPos(position);
+
+        int[] dxs = new int[] {-1, 0, 1};
+        int[] dzs = new int[] {-1, 0, 1};
+        Block block;
+
+        for(int i = 0; i < 3; i++){
+            int dx = dxs[i];
+            for(int j = 0; j < 3; j++){
+                int dz = dzs[j];
+
+                // block = world.GetBlock(chunkId, new Vector3Int(localId.x + dx, localId.y, localId.z + dz));
+                block = world.GetBlock(newPosition + new Vector3(dx, -colliderHeight + 0.01f, dz));
+                if(block != null){
+                    if(block.IsSolid()){
+                        Vector2 back2D = Collision(new Vector2(localPos.x, localPos.z), new Vector2(localId.x + dx, localId.z + dz), colliderRadius);
+                        newPosition -= new Vector3(back2D.x, 0.0f, back2D.y);
+                        localPos = world.GetLocalPos(newPosition);
+                    }
+                }
+            }
+        }
+        return newPosition;
+    }
+
+    Vector3 SolveCollisionY(Vector3 position){
+        Vector3 newPosition = position;
+        Vector2Int chunkId = world.GetChunkId(position);
+        Vector3Int localId = world.GetLocalId(position);
+        Vector3 localPos = world.GetLocalPos(position);
+
+        int[] dxs = new int[] {-1, 0, 1};
+        int[] dzs = new int[] {-1, 0, 1};
+        Block block;
+
+        for(int i = 0; i < 3; i++){
+            int dx = dxs[i];
+            for(int j = 0; j < 3; j++){
+                int dz = dzs[j];
+
+                block = world.GetBlock(chunkId, new Vector3Int(localId.x + dx, localId.y - 1, localId.z + dz));
+                if(block != null){
+                    if(block.IsSolid()){
+                        if(newPosition.y - block.GetGlobalPosition().y < colliderHeight + Block.sizeV / 2.0f){
+                            Vector2 back = Collision(new Vector2(localPos.x, localPos.z), new Vector2(localId.x + dx, localId.z + dz), colliderRadius);
+                            Debug.Log($"localId {localId} block {block.blockType} back {back}");
+                            if(back != Vector2.zero || ((dx == 0) && (dz == 0))){
+                                newPosition.y = block.GetGlobalPosition().y + Block.sizeV / 2.0f + colliderHeight;
+                                isJumping = false;
+                                return newPosition;
+                            }
+                        }
+                    }
+                }
+            }
+        }
+        isJumping = true;
+
+        return newPosition;
+
+    }
+
+
     Vector3 SolveCollision(Vector3 position){
 
         Vector3 newPosition = position;
@@ -163,7 +235,8 @@ public class Player : MonoBehaviour
             for(int j = 0; j < 3; j++){
                 int dz = dzs[j];
 
-                block = world.GetBlock(chunkId, new Vector3Int(localId.x + dx, localId.y, localId.z + dz));
+                // block = world.GetBlock(chunkId, new Vector3Int(localId.x + dx, localId.y, localId.z + dz));
+                block = world.GetBlock(newPosition + new Vector3(dx, -colliderHeight + 0.01f, dz));
                 if(block != null){
                     if(block.IsSolid()){
                         Vector2 back2D = Collision(new Vector2(localPos.x, localPos.z), new Vector2(localId.x + dx, localId.z + dz), colliderRadius);
