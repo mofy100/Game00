@@ -95,25 +95,29 @@ public partial class Chunk{
 
     float GetAlt(int gX, int gZ, float temp, float humid){
         float alt = 0.0f;
-        float scale;
+        float freq;
         float height;
         float noise;
 
-        temp /= 8.0f;
-        humid /= 8.0f;
+        float offset1 = 10000.0f;
+        float offset2 = 100.0f;
+        
+        // temp, humid 0.0f ~ 8.0f
+        temp /= 8.0f;  // 0.0f = 1.0f
+        humid /= 8.0f; // 0.0f = 1.0f
 
-        // soilType 0 ~ 3
-
-        scale = 10.0f;
+        freq = 0.01f;
         // height = 20.0f;
-        height = 10.0f + 10.0f * Mathf.Abs(temp - 0.25f);
-        noise = Mathf.PerlinNoise(gX / scale, gZ / scale);
-        alt += ((noise > 0.5f) ? (noise - 0.5f) : 0.0f) * height;
-        scale = 30.0f;
+        height = 10.0f + 10.0f * Mathf.Abs(temp - 0.5f);
+        noise = Mathf.PerlinNoise(gX * freq + offset1, gZ * freq + offset1);
+        alt += noise * height;
+        // alt += ((noise > 0.5f) ? (noise - 0.5f) : 0.0f) * height;
+        freq = 0.02f + 0.01f * (humid * humid);
+        // freq = 0.05f;
         // height = 60.0f;
-        height = 10.0f + 50.0f * Mathf.Abs(temp - 0.25f);
+        height = 10.0f + 200.0f * Mathf.Abs(temp - 0.5f);
         // height = Mathf.PerlinNoise(gX / 100.0f, gZ / 100.0f) * 30.0f + 30.0f;
-        noise = Mathf.PerlinNoise(gX / scale, gZ / scale);
+        noise = Mathf.PerlinNoise(gX * freq + offset2, gZ * freq + offset2);
         alt += ((noise > 0.5f) ? (noise - 0.5f) : 0.0f) * height;
 
         return alt;
