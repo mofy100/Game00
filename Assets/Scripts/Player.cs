@@ -66,6 +66,7 @@ public class Player : MonoBehaviour
             if(!isJumping){
                 isJumping = true;
                 velocityY = 4.0f;
+                characterAnimator.SetTrigger("jump");
             }
         }
 

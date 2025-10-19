@@ -43,7 +43,8 @@ public partial class Chunk{
                 gX += offsetX;
                 gZ += offsetZ;
 
-                noise = Mathf.PerlinNoise(gX / 300.0f, gZ / 300.0f);
+                float tempScale = 500.0f;
+                noise = Mathf.PerlinNoise(gX / tempScale, gZ / tempScale);
                 amp = 0.01f;
                 if(Mathf.Abs(noise - 0.5f) < 0.3f){
                     noise = 0.5f + (noise - 0.5f) * 0.9f;
@@ -53,7 +54,8 @@ public partial class Chunk{
                 noise *= (8.0f - 0.000001f);
                 float soilTemperature = noise;
 
-                noise = Mathf.PerlinNoise(gX / 100.0f + 10.0f, gZ / 100.0f + 10.0f);
+                float humidScale = 500.0f;
+                noise = Mathf.PerlinNoise(gX / humidScale + 10.0f, gZ / humidScale + 10.0f);
                 amp = 0.01f;
                 noise = 0.5f + (noise - 0.5f) * 0.9f;
                 noise += (float)rand.NextDouble() * (2 * amp) - amp;
@@ -97,30 +99,44 @@ public partial class Chunk{
         float alt = 0.0f;
         float freq;
         float height;
+        float offset;
         float noise;
 
-        float offset1 = 10000.0f;
-        float offset2 = 100.0f;
         
         // temp, humid 0.0f ~ 8.0f
-        temp /= 8.0f;  // 0.0f = 1.0f
-        humid /= 8.0f; // 0.0f = 1.0f
+        temp /= 8.0f;  // 0.0f ~ 1.0f
+        humid /= 8.0f; // 0.0f ~ 1.0f
 
-        freq = 0.01f;
+        freq = 0.005f;
         // height = 20.0f;
-        height = 10.0f + 10.0f * Mathf.Abs(temp - 0.5f);
-        noise = Mathf.PerlinNoise(gX * freq + offset1, gZ * freq + offset1);
+        height = 10.0f;
+        offset = 100.0f;
+        noise = Mathf.PerlinNoise(gX * freq + offset, gZ * freq + offset);
         alt += noise * height;
-        // alt += ((noise > 0.5f) ? (noise - 0.5f) : 0.0f) * height;
-        freq = 0.02f + 0.01f * (humid * humid);
-        // freq = 0.05f;
-        // height = 60.0f;
-        height = 10.0f + 200.0f * Mathf.Abs(temp - 0.5f);
-        // height = Mathf.PerlinNoise(gX / 100.0f, gZ / 100.0f) * 30.0f + 30.0f;
-        noise = Mathf.PerlinNoise(gX * freq + offset2, gZ * freq + offset2);
-        alt += ((noise > 0.5f) ? (noise - 0.5f) : 0.0f) * height;
 
-        return alt;
+        // alt += ((noise > 0.5f) ? (noise - 0.5f) : 0.0f) * height;
+        freq = 0.02f;
+        height = 30.0f; 
+        offset = 200.0f;
+        // height = Mathf.PerlinNoise(gX / 100.0f, gZ / 100.0f) * 30.0f + 30.0f;
+        noise = Mathf.PerlinNoise(gX * freq + offset, gZ * freq + offset);
+        alt += (noise - 0.2f) * height;
+
+        freq = 0.06f;
+        height = 30.0f + 50.0f * temp;
+        offset = 300.0f;
+        // height = Mathf.PerlinNoise(gX / 100.0f, gZ / 100.0f) * 30.0f + 30.0f;
+        noise = Mathf.PerlinNoise(gX * freq + offset, gZ * freq + offset);
+        alt += ((noise > 0.6f) ? (noise - 0.6f) : 0.0f) * height;
+
+        freq = 0.1f;
+        height = (temp > 0.8f) ? 100.0f : 0.0f;
+        offset = 400.0f;
+        // height = Mathf.PerlinNoise(gX / 100.0f, gZ / 100.0f) * 30.0f + 30.0f;
+        noise = Mathf.PerlinNoise(gX * freq + offset, gZ * freq + offset);
+        alt += ((noise > 0.7f) ? (noise - 0.75f) : 0.0f) * height;
+
+        return (alt > 0) ? alt : 0.0f;
     }
 }
 
