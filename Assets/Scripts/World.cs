@@ -242,7 +242,7 @@ public partial class World : MonoBehaviour  // Other functions are written in "W
             ChunkMeshGenerator.UpdateMesh(chunks[chunkId]);
         }
         else if(IsObject(blockType)){
-            chunks[chunkId].objects[localId] = blockType;
+            chunks[chunkId].SetObject(blockType, localId);
             block.SetAngle(angle);
             if(IsFense(blockType)){
                 AddFenseBlock((FenseBlock)block);
@@ -265,7 +265,7 @@ public partial class World : MonoBehaviour  // Other functions are written in "W
                 DeleteFenseBlock((FenseBlock)block);
             }
             block.blockType = BlockType.Empty;
-            chunks[chunkId].objects.Remove(block.localId);
+            chunks[chunkId].RemoveObject(blockType, block.localId);
         }
         chunks[chunkId].modified = true;
 

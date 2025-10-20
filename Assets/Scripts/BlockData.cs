@@ -21,4 +21,12 @@ public class BlockData : ScriptableObject{
         }
     }
 
+    public Mesh GetMesh(){
+        if(mesh == null){
+            return meshes[0];
+        }else{
+            return mesh;
+        }
+    }
+
 }

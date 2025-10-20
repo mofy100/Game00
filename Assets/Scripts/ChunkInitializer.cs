@@ -77,13 +77,11 @@ public partial class Chunk{
 
                 // add object
                 bool hasObject = false;
-                /*
-                if(maxY <= 5){
-                    if(rand.NextDouble() < 0.01f){
+                if(maxY <= 20){
+                    if(rand.NextDouble() < 0.1f){
                         hasObject = true;
                     }
                 }
-                */
 
                 for(int y = 0; y < Chunk.sizeV; y++){
                     Block b;
@@ -91,7 +89,7 @@ public partial class Chunk{
                     if(y == maxY + 1 && hasObject == true){
                         b = new ObjectBlock();
                         b.blockType = BlockType.Tree;
-                        objects[localId] = BlockType.Tree;
+                        SetObject(b.blockType, localId);
                     }else if(y <= maxY){
                         b = new Block();
                         b.blockType = BlockType.Soil;

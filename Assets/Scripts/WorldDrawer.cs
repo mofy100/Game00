@@ -26,6 +26,7 @@ public partial class World // Other functions are written in "WorldUtils.cs"
                 }
 
                 // Draw Objects
+                /*
                 foreach(KeyValuePair<Vector3Int, BlockType> kvp in chunk.objects){
                     var localId = kvp.Key;
                     var blockType = kvp.Value;
@@ -36,6 +37,14 @@ public partial class World // Other functions are written in "WorldUtils.cs"
                     Debug.Log($"blockType {blockType} mesh {block.GetMesh()}");
 
                     Graphics.DrawMesh(block.GetMesh(), Matrix4x4.TRS(GetGlobalPos(chunkId, localId), blockRotation, Vector3.one), blockData.material, 0);
+                }
+                */
+                foreach(KeyValuePair<BlockType, List<Matrix4x4>> kvp in chunk.objects){
+                    var blockType = kvp.Key;
+                    var matrices = kvp.Value;
+                    var blockData = BlockDataManager.GetBlockData(blockType);
+                    Debug.Log(blockData.GetMaterial());
+                    Graphics.DrawMeshInstanced(blockData.GetMesh(), 0, blockData.GetMaterial(), matrices);
                 }
             }else{
                 if(!creatingChunk){

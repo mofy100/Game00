@@ -15,7 +15,8 @@ public partial class Chunk{
     // public List<Matrix4x4> matrices = new List<Matrix4x4>();
 
     // Objects
-    public Dictionary<Vector3Int, BlockType> objects = new Dictionary<Vector3Int, BlockType>();
+    // public Dictionary<Vector3Int, BlockType> objects = new Dictionary<Vector3Int, BlockType>();
+    public Dictionary<BlockType, List<Matrix4x4>> objects = new Dictionary<BlockType, List<Matrix4x4>>();
 
     // BlockType of submesh
     public List<(BlockType, byte)> submeshBlockTypes = new List<(BlockType, byte)>();
@@ -30,6 +31,26 @@ public partial class Chunk{
 
     public void SetBlock(Block b, Vector3Int localId){
         blocks[localId.x, localId.y, localId.z] = b;
+    }
+
+    public Vector3 GetGlobalPosition(Vector3Int localId){
+        return GetPosition() + new Vector3(localId.x, localId.y * Block.sizeV, localId.z);
+    }
+
+    public void SetObject(BlockType type, Vector3Int localId){
+        if(!objects.ContainsKey(type)){
+            objects[type] = new List<Matrix4x4>();
+        }
+        Matrix4x4 matrix = Matrix4x4.TRS(GetGlobalPosition(localId), Quaternion.identity, Vector3.one);
+        objects[type].Add(matrix);
+    }
+
+    public void RemoveObject(BlockType type, Vector3Int localId){
+        if(!objects.ContainsKey(type)){
+            return;
+        }
+        Vector3 globalPosition = GetGlobalPosition(localId);
+        objects[type].RemoveAll(mat => Vector3.Distance(mat.GetColumn(3), globalPosition) < 0.1f);
     }
 
 }

@@ -39,11 +39,12 @@ public class WorldLoader : MonoBehaviour{
                 for(int z = 0; z < Chunk.sizeH; z++){
                     BlockType blockType = (BlockType)reader.ReadByte();
                     Block b = BlockUtils.CreateBlock(blockType);
+                    Vector3Int localId = new Vector3Int(x, y, z);
                     b.chunkId = chunkId;
-                    b.localId = new Vector3Int(x, y, z);
+                    b.localId = localId;
                     chunk.blocks[x, y, z] = b;
                     if(b.IsObject()){
-                        chunk.objects[new Vector3Int(x, y, z)] = blockType;
+                        chunk.SetObject(blockType, localId);
                         if(b.IsFense()){
                             byte fenseNumber = reader.ReadByte();
                             b.SetFenseShape(fenseNumber);
