@@ -8,9 +8,10 @@ using static BlockUtils;
 
 public partial class World // Other functions are written in "WorldUtils.cs"
 {
-    void Draw(){
+    void Draw(Vector2Int userChunkId){
 
-        foreach(Vector2Int chunkId in drawingChunkIds){
+        foreach(Vector2Int offset in drawingOffset){
+            Vector2Int chunkId = userChunkId + offset;
 
             if(chunks.ContainsKey(chunkId)){
 

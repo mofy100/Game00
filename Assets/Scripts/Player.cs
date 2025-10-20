@@ -23,6 +23,9 @@ public class Player : MonoBehaviour
     [SerializeField] GameObject character;
     private Animator characterAnimator;
 
+    private const float nearestDistance = 3.0f;
+    private const float farthestDistance = 1000.0f;
+
     // Capsule Collider
     private const float colliderHeight = 0.25f;
     private const float colliderRadius = 0.25f;
@@ -47,8 +50,7 @@ public class Player : MonoBehaviour
     }
 
     void Start(){
-        transform.position = new Vector3(transform.position.x, 3.0f, transform.position.z);
-        Move(Vector2.zero);
+        transform.position = new Vector3(transform.position.x, 10.0f, transform.position.z);
     }
 
     void Update()
@@ -146,7 +148,8 @@ public class Player : MonoBehaviour
 
     void MoveNear(float value){
         Vector3 offset = myCamera.transform.position - this.transform.position;
-        offset += value * offset.normalized * nearSpeed * Time.deltaTime;
+        if((offset.magnitude < nearestDistance && value < 0) || (farthestDistance < offset.magnitude && value > 0)) return;
+        offset += value * offset * nearSpeed * Time.deltaTime;
         myCamera.transform.position = this.transform.position + offset;
     }
 

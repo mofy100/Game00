@@ -21,24 +21,6 @@ public partial class Chunk{
     // BlockType of submesh
     public List<(BlockType, byte)> submeshBlockTypes = new List<(BlockType, byte)>();
 
-    /*
-    public bool Update(){
-        time += Time.deltaTime * Random.Range(0.0f, 1.0f);
-        if(time < updateInterval){
-            return false;
-        }
-        time -= updateInterval;
-        for(int x = 0; x < sizeH; x++){
-            for(int z = 0; z < sizeH; z++){
-                blocks[x, grounds[x, z], z].Update();
-            }
-        }
-        ChunkMeshGenerator.UpdateMeshData(this);
-        ChunkMeshGenerator.UpdateMesh(this);
-        return true;
-    }
-    */
-
     public Vector3 GetPosition(){
         return new Vector3(chunkId.x * Chunk.sizeH * Block.sizeH, 0.0f, chunkId.y * Chunk.sizeH * Block.sizeH);
     }

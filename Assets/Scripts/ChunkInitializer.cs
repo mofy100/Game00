@@ -71,12 +71,28 @@ public partial class Chunk{
                 }
 
                 byte soilType = (byte)(Mathf.FloorToInt(soilTemperature) * 8 + Mathf.FloorToInt(soilHumid));
-                alt += GetAlt(gX, gZ, soilTemperature, soilHumid);
+
+                alt += GetAlt(gX, gZ, soilTemperature, soilHumid, rand);
                 int maxY = (int)alt;
+
+                // add object
+                bool hasObject = false;
+                /*
+                if(maxY <= 5){
+                    if(rand.NextDouble() < 0.01f){
+                        hasObject = true;
+                    }
+                }
+                */
 
                 for(int y = 0; y < Chunk.sizeV; y++){
                     Block b;
-                   if(y <= maxY){
+                    Vector3Int localId = new Vector3Int(x, y, z);
+                    if(y == maxY + 1 && hasObject == true){
+                        b = new ObjectBlock();
+                        b.blockType = BlockType.Tree;
+                        objects[localId] = BlockType.Tree;
+                    }else if(y <= maxY){
                         b = new Block();
                         b.blockType = BlockType.Soil;
                         b.SetBlockSubType(soilType);
@@ -84,9 +100,8 @@ public partial class Chunk{
                         b = new Block();
                         b.blockType= BlockType.Empty;
                     }
-
                     b.chunkId = chunkId;
-                    b.localId = new Vector3Int(x, y, z);
+                    b.localId = localId;
                     blocks[x, y, z] = b;
                 }
                 grounds[x, z] = maxY;
@@ -95,7 +110,7 @@ public partial class Chunk{
         modified = true;
     }
 
-    float GetAlt(int gX, int gZ, float temp, float humid){
+    float GetAlt(int gX, int gZ, float temp, float humid, System.Random rand){
         float alt = 0.0f;
         float freq;
         float height;

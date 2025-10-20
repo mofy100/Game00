@@ -10,10 +10,9 @@ public partial class World : MonoBehaviour  // Other functions are written in "W
 {
     public Dictionary<Vector2Int, Chunk> chunks = new Dictionary<Vector2Int, Chunk>();
 
-    private const int initialDrawRange = 2; // at the beginning of the game
-    private const int drawRange = 5;
-    private const int drawWidth = 2 * drawRange + 1;
-    public Vector2Int[] drawingChunkIds;
+    private const int drawRange = 2;
+    private Vector2Int[] drawingOffset;
+    private const int activeDistance = 8;
 
     private GameObject user;
     private Player player;
@@ -31,23 +30,42 @@ public partial class World : MonoBehaviour  // Other functions are written in "W
         }
         player = user.GetComponent<Player>();
 
-        drawingChunkIds = new Vector2Int[drawWidth * drawWidth];
-        int k = 0;
-        for(int i = -initialDrawRange; i <= initialDrawRange; i++){
-            for(int j = -initialDrawRange; j <= initialDrawRange; j++){
+        drawingOffset = new Vector2Int[(2 * drawRange + 1) * (2 * drawRange + 1)];
+        int i = 0;
+        for(int distance = 0; distance <= 2 * drawRange; distance++){
+            for(int x = 0; x <= drawRange; x++){
+                int y = distance - x;
+                if(y < 0){
+                    break;
+                }else if(y == 0){
+                    drawingOffset[i++] = new Vector2Int(x, y);
+                    if(x != 0){
+                        drawingOffset[i++] = new Vector2Int(-x, y);
+                    }
+                }else if(y <= drawRange){
+                    drawingOffset[i++] = new Vector2Int(x, y);
+                    drawingOffset[i++] = new Vector2Int(x, -y);
+                    if(x != 0){
+                        drawingOffset[i++] = new Vector2Int(-x, y);
+                        drawingOffset[i++] = new Vector2Int(-x, -y);
+                    }
+                }else{
+                    continue;
+                }
+            }
+        }
 
-                drawingChunkIds[k++] = new Vector2Int(i, j);
-
-                // create the world
+        var userChunkId = GetChunkId(user.transform.position);
+        foreach(Vector2Int offset in drawingOffset){
+                Vector2Int drawChunkId = userChunkId + offset;
                 Chunk chunk = new();
-                chunk.chunkId = new Vector2Int(i, j);
+                chunk.chunkId = drawChunkId;
                 if(!WorldLoader.LoadChunk(chunk)){
                     chunk.InitializeBlocks();
                 }
                 ChunkMeshGenerator.UpdateMeshData(chunk);
                 ChunkMeshGenerator.UpdateMesh(chunk);
-                chunks[new Vector2Int(i, j)] = chunk;
-            }
+                chunks[drawChunkId] = chunk;
         }
     }
 
@@ -58,46 +76,14 @@ public partial class World : MonoBehaviour  // Other functions are written in "W
 
     void Update()
     {
-        var userChunkId = GetChunkId(user.transform.position);
-        int i = 0;
-        for(int distance = 0; distance < drawRange * 2; distance++){
-            for(int x = 0; x <= drawRange; x++){
-                int y = distance - x;
-                if(y < 0){
-                    break;
-                }else if(y == 0){
-                    drawingChunkIds[i++] = new Vector2Int(userChunkId.x + x,
-                                                          userChunkId.y);
-                    if(x != 0){
-                        drawingChunkIds[i++] = new Vector2Int(userChunkId.x - x,
-                                                                userChunkId.y);
-                    }
-                }else if(y <= drawRange){
-                    drawingChunkIds[i++] = new Vector2Int(userChunkId.x + x,
-                                                          userChunkId.y + y);
-                    drawingChunkIds[i++] = new Vector2Int(userChunkId.x + x,
-                                                          userChunkId.y - y);
-                    if(x != 0){
-                        drawingChunkIds[i++] = new Vector2Int(userChunkId.x - x,
-                                                            userChunkId.y + y);
-                        drawingChunkIds[i++] = new Vector2Int(userChunkId.x - x,
-                                                            userChunkId.y - y);
-                    }
-                }else{
-                    continue;
-                }
-            }
+        Vector2Int userChunkId = GetChunkId(user.transform.position);
+        Draw(userChunkId);
+        var inactiveKeys = chunks.Where(pair => (pair.Key - userChunkId).magnitude > activeDistance).Select(pair => pair.Key).ToList();
+        foreach(var key in inactiveKeys){
+            chunks.Remove(key);
+            Debug.Log($"Remove {key}");
         }
-        /*
-        for(int i = 0; i < drawWidth; i++){
-            for(int j = 0; j < drawWidth; j++){
-                drawingChunkIds[i * drawWidth + j] = new Vector2Int(userChunkId.x - drawRange + i,
-                                                                    userChunkId.y - drawRange + j);
-            }
-        }
-        */
 
-        Draw();
 
     }
 
