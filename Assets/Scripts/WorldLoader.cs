@@ -52,7 +52,6 @@ public class WorldLoader : MonoBehaviour{
                 }
             }
         }
-        chunk.SetGround();
         return true;
     }
 

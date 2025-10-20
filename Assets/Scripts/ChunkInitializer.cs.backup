@@ -88,7 +88,6 @@ public partial class Chunk{
                     b.localId = new Vector3Int(x, y, z);
                     blocks[x, y, z] = b;
                 }
-                grounds[x, z] = maxY;
             }
         }
         modified = true;

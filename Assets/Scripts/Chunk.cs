@@ -10,10 +10,9 @@ public partial class Chunk{
 
     // Blocks
     public Block[,,] blocks = new Block[sizeH, sizeV, sizeH];
-    public int[,] grounds = new int[sizeH, sizeH];
     public MeshData meshData;
     public Mesh mesh;
-    public List<Matrix4x4> matrices = new List<Matrix4x4>();
+    // public List<Matrix4x4> matrices = new List<Matrix4x4>();
 
     // Objects
     public Dictionary<Vector3Int, BlockType> objects = new Dictionary<Vector3Int, BlockType>();
@@ -33,23 +32,4 @@ public partial class Chunk{
         blocks[localId.x, localId.y, localId.z] = b;
     }
 
-    public int GetGround(Vector2Int localId){
-        return grounds[localId.x, localId.y];
-    }
-
-    public void SetGround(){
-        for(int x = 0; x < sizeH; x++){
-            for(int z = 0; z < sizeH; z++){
-                bool flag = false;
-                for(int y = sizeV - 1; y >= 0; y--){
-                    if(!blocks[x, y, z].IsEmpty()){
-                        grounds[x, z] = y;
-                        flag = true;
-                    }
-                    if(flag) break;
-                }
-            }
-        }
-    }
-    
 }

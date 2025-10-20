@@ -104,7 +104,6 @@ public partial class Chunk{
                     b.localId = localId;
                     blocks[x, y, z] = b;
                 }
-                grounds[x, z] = maxY;
             }
         }
         modified = true;
